@@ -9,11 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Spork\Test\Batch\Strategy;
+namespace Spork\Batch\Strategy;
 
+use PHPUnit\Framework\TestCase;
 use Spork\Batch\Strategy\ChunkStrategy;
 
-class ChunkStrategyTest extends \PHPUnit_Framework_TestCase
+class ChunkStrategyTest extends TestCase
 {
     /**
      * @dataProvider provideNumber
@@ -31,12 +32,12 @@ class ChunkStrategyTest extends \PHPUnit_Framework_TestCase
 
     public function provideNumber()
     {
-        return array(
-            array(1, array(100)),
-            array(2, array(50, 50)),
-            array(3, array(34, 34, 32)),
-            array(4, array(25, 25, 25, 25)),
-            array(5, array(20, 20, 20, 20, 20)),
-        );
+        return [
+            [1, [100]],
+            [2, [50, 50]],
+            [3, [34, 34, 32]],
+            [4, [25, 25, 25, 25]],
+            [5, [20, 20, 20, 20, 20]],
+        ];
     }
 }

@@ -9,32 +9,44 @@
  * file that was distributed with this source code.
  */
 
-namespace Spork\Test;
+namespace Spork;
 
+use PHPUnit\Framework\TestCase;
 use Spork\ProcessManager;
+use Spork\SharedMemory;
 
-class SignalTest extends \PHPUnit_Framework_TestCase
+class SignalTest extends TestCase
 {
+    /** @var \Spork\ProcessManager $manager */
     private $manager;
 
-    protected function setUp()
+    /** @var bool $async */
+    private $async;
+
+    protected function setUp(): void
     {
+        $this->async = pcntl_async_signals();
+        pcntl_async_signals(true);
+
         $this->manager = new ProcessManager();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->manager = null;
+
+        pcntl_async_signals($this->async);
     }
 
     public function testSignalParent()
     {
         $signaled = false;
-        $this->manager->addListener(SIGUSR1, function() use(& $signaled) {
+
+        $this->manager->addListener(SIGUSR1, function () use (&$signaled) {
             $signaled = true;
         });
 
-        $this->manager->fork(function($sharedMem) {
+        $this->manager->fork(function (SharedMemory $sharedMem) {
             $sharedMem->signal(SIGUSR1);
         });
 

@@ -9,18 +9,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Spork\Test\Batch\Strategy;
+namespace Spork\Batch\Strategy;
 
+use PHPUnit\Framework\TestCase;
 use Spork\Batch\Strategy\MongoStrategy;
 use Spork\EventDispatcher\Events;
 use Spork\ProcessManager;
 
-class MongoStrategyTest extends \PHPUnit_Framework_TestCase
+class MongoStrategyTest extends TestCase
 {
     private $mongo;
     private $manager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!class_exists('MongoClient', false)) {
             $this->markTestSkipped('Mongo extension is not loaded');
@@ -37,12 +38,12 @@ class MongoStrategyTest extends \PHPUnit_Framework_TestCase
 
         // close the connection prior to forking
         $mongo = $this->mongo;
-        $this->manager->addListener(Events::PRE_FORK, function() use($mongo) {
+        $this->manager->addListener(Events::PRE_FORK, function () use ($mongo) {
             $mongo->close();
         });
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->mongo) {
             $this->mongo->close();
@@ -56,17 +57,17 @@ class MongoStrategyTest extends \PHPUnit_Framework_TestCase
         $coll = $this->mongo->spork->widgets;
 
         $coll->remove();
-        $coll->batchInsert(array(
-            array('name' => 'Widget 1'),
-            array('name' => 'Widget 2'),
-            array('name' => 'Widget 3'),
-        ));
+        $coll->batchInsert([
+            ['name' => 'Widget 1'],
+            ['name' => 'Widget 2'],
+            ['name' => 'Widget 3'],
+        ]);
 
         $this->manager->createBatchJob($coll->find(), new MongoStrategy())
-            ->execute(function($doc) use($coll) {
+            ->execute(function ($doc) use ($coll) {
                 $coll->update(
-                    array('_id' => $doc['_id']),
-                    array('$set' => array('seen' => true))
+                    ['_id' => $doc['_id']],
+                    ['$set' => ['seen' => true]]
                 );
             });
 

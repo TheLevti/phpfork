@@ -1,24 +1,78 @@
 {
-    "name": "kriswallsmith/spork",
-    "description": "Asynchronous PHP",
-    "homepage": "https://github.com/kriswallsmith/spork",
+    "name": "thelevti/spork",
+    "description": "PHP on a Fork.",
     "type": "library",
+    "keywords": [
+        "php",
+        "fork",
+        "thread",
+        "async",
+        "shmop"
+    ],
+    "homepage": "https://github.com/TheLevti/spork",
+    "readme": "README.md",
     "license": "MIT",
     "authors": [
         {
+            "name": "Petr Levtonov",
+            "email": "petr@levtonov.com",
+            "homepage": "https://github.com/TheLevti",
+            "role": "Maintainer"
+        },
+        {
             "name": "Kris Wallsmith",
             "email": "kris.wallsmith@gmail.com",
-            "homepage": "http://kriswallsmith.net/"
+            "homepage": "http://kriswallsmith.net/",
+            "role": "Original Maintainer"
         }
     ],
+    "support": {
+        "email": "petr@levtonov.com",
+        "issues": "https://github.com/TheLevti/spork/issues",
+        "wiki": "https://github.com/TheLevti/spork/wiki",
+        "source": "https://github.com/TheLevti/spork",
+        "docs": "https://github.com/TheLevti/spork/blob/master/README.md",
+        "rss": "https://github.com/TheLevti/spork/commits/master.atom"
+    },
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=7.2.0",
+        "symfony/event-dispatcher": ">=3.0.0"
+    },
+    "require-dev": {
         "ext-pcntl": "*",
         "ext-posix": "*",
         "ext-shmop": "*",
-        "symfony/event-dispatcher": "*"
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "phpunit/phpunit": "^8.4",
+        "squizlabs/php_codesniffer": "^3.5"
     },
     "autoload": {
-        "psr-0": { "Spork": "src/" }
+        "psr-4": {
+            "Spork\\": "src/Spork/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Spork\\": "tests/Spork/"
+        }
+    },
+    "suggest": {
+        "ext-pnctl": "To allow this library forking processes.",
+        "ext-posix": "To allow this library getting process information.",
+        "ext-shmop": "To allow this library doing interprocess communication."
+    },
+    "archive": {
+        "exclude": [
+            "/.gitattributes",
+            "/.github",
+            "/.gitignore",
+            "/.travis.yml",
+            "/php_cs.dist",
+            "/phpunit.xml.dist",
+            "/tests"
+        ]
+    },
+    "config": {
+        "sort-packages": true
     }
 }

@@ -24,7 +24,7 @@ use Spork\Exception\UnexpectedTypeException;
  */
 class MongoStrategy extends AbstractStrategy
 {
-    const DATA_CLASS = 'MongoCursor';
+    public const DATA_CLASS = 'MongoCursor';
 
     private $size;
     private $skip;
@@ -53,7 +53,7 @@ class MongoStrategy extends AbstractStrategy
 
         $batches = array();
         for ($i = 0; $i < $this->size; $i++) {
-            $batches[] = function() use($cursor, $skip, $i, $limit) {
+            $batches[] = function () use ($cursor, $skip, $i, $limit) {
                 return $cursor->skip($skip + $i * $limit)->limit($limit);
             };
         }

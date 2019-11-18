@@ -22,17 +22,17 @@ class EventDispatcher extends BaseEventDispatcher implements EventDispatcherInte
 {
     public function dispatchSignal($signal)
     {
-        $this->dispatch('spork.signal.'.$signal);
+        $this->dispatch('spork.signal.' . $signal);
     }
 
     public function addSignalListener($signal, $callable, $priority = 0)
     {
-        $this->addListener('spork.signal.'.$signal, $callable, $priority);
+        $this->addListener('spork.signal.' . $signal, $callable, $priority);
         pcntl_signal($signal, array($this, 'dispatchSignal'));
     }
 
     public function removeSignalListener($signal, $callable)
     {
-        $this->removeListener('spork.signal.'.$signal, $callable);
+        $this->removeListener('spork.signal.' . $signal, $callable);
     }
 }

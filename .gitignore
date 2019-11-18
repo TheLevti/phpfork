@@ -1,4 +1,5 @@
-composer.lock
-composer.phar
-phpunit.xml
-vendor/
+/.php_cs
+/.phpunit.result.cache
+/composer.lock
+/phpunit.xml
+/vendor
