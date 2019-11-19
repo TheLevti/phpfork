@@ -28,18 +28,18 @@ class WrappedEventDispatcher implements EventDispatcherInterface
 
     public function dispatchSignal($signal)
     {
-        $this->delegate->dispatch('spork.signal.'.$signal);
+        $this->delegate->dispatch('spork.signal.' . $signal);
     }
 
     public function addSignalListener($signal, $callable, $priority = 0)
     {
-        $this->delegate->addListener('spork.signal.'.$signal, $callable, $priority);
-        pcntl_signal($signal, array($this, 'dispatchSignal'));
+        $this->delegate->addListener('spork.signal.' . $signal, $callable, $priority);
+        pcntl_signal($signal, [$this, 'dispatchSignal']);
     }
 
     public function removeSignalListener($signal, $callable)
     {
-        $this->delegate->removeListener('spork.signal.'.$signal, $callable);
+        $this->delegate->removeListener('spork.signal.' . $signal, $callable);
     }
 
     public function dispatch($eventName, Event $event = null)
@@ -70,6 +70,11 @@ class WrappedEventDispatcher implements EventDispatcherInterface
     public function getListeners($eventName = null)
     {
         return $this->delegate->getListeners($eventName);
+    }
+
+    public function getListenerPriority($eventName, $listener)
+    {
+        return $this->delegate->getListenerPriority($eventName, $listener);
     }
 
     public function hasListeners($eventName = null)

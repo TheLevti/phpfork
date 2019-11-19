@@ -9,30 +9,33 @@
  * file that was distributed with this source code.
  */
 
-namespace Spork\Test\Deferred;
+namespace Spork\Deferred;
 
+use PHPUnit\Framework\TestCase;
 use Spork\Deferred\Deferred;
 use Spork\Deferred\DeferredAggregate;
+use Spork\Exception\UnexpectedTypeException;
 
-class DeferredAggregateTest extends \PHPUnit_Framework_TestCase
+class DeferredAggregateTest extends TestCase
 {
     public function testInvalidChild()
     {
-        $this->setExpectedException('Spork\Exception\UnexpectedTypeException', 'PromiseInterface');
+        $this->expectException(UnexpectedTypeException::class);
+        $this->expectDeprecationMessage('PromiseInterface');
 
-        $defer = new DeferredAggregate(array('asdf'));
+        $defer = new DeferredAggregate(['asdf']);
     }
 
     public function testNoChildren()
     {
-        $defer = new DeferredAggregate(array());
+        $defer = new DeferredAggregate([]);
 
-        $log = array();
-        $defer->done(function() use(& $log) {
+        $log = [];
+        $defer->done(function () use (&$log) {
             $log[] = 'done';
         });
 
-        $this->assertEquals(array('done'), $log);
+        $this->assertEquals(['done'], $log);
     }
 
     public function testResolvedChildren()
@@ -40,14 +43,14 @@ class DeferredAggregateTest extends \PHPUnit_Framework_TestCase
         $child = new Deferred();
         $child->resolve();
 
-        $defer = new DeferredAggregate(array($child));
+        $defer = new DeferredAggregate([$child]);
 
-        $log = array();
-        $defer->done(function() use(& $log) {
+        $log = [];
+        $defer->done(function () use (&$log) {
             $log[] = 'done';
         });
 
-        $this->assertEquals(array('done'), $log);
+        $this->assertEquals(['done'], $log);
     }
 
     public function testResolution()
@@ -55,20 +58,20 @@ class DeferredAggregateTest extends \PHPUnit_Framework_TestCase
         $child1 = new Deferred();
         $child2 = new Deferred();
 
-        $defer = new DeferredAggregate(array($child1, $child2));
+        $defer = new DeferredAggregate([$child1, $child2]);
 
-        $log = array();
-        $defer->done(function() use(& $log) {
+        $log = [];
+        $defer->done(function () use (&$log) {
             $log[] = 'done';
         });
 
-        $this->assertEquals(array(), $log);
+        $this->assertEquals([], $log);
 
         $child1->resolve();
-        $this->assertEquals(array(), $log);
+        $this->assertEquals([], $log);
 
         $child2->resolve();
-        $this->assertEquals(array('done'), $log);
+        $this->assertEquals(['done'], $log);
     }
 
     public function testRejection()
@@ -77,35 +80,35 @@ class DeferredAggregateTest extends \PHPUnit_Framework_TestCase
         $child2 = new Deferred();
         $child3 = new Deferred();
 
-        $defer = new DeferredAggregate(array($child1, $child2, $child3));
+        $defer = new DeferredAggregate([$child1, $child2, $child3]);
 
-        $log = array();
-        $defer->then(function() use(& $log) {
+        $log = [];
+        $defer->then(function () use (&$log) {
             $log[] = 'done';
-        }, function() use(& $log) {
+        }, function () use (&$log) {
             $log[] = 'fail';
         });
 
-        $this->assertEquals(array(), $log);
+        $this->assertEquals([], $log);
 
         $child1->resolve();
-        $this->assertEquals(array(), $log);
+        $this->assertEquals([], $log);
 
         $child2->reject();
-        $this->assertEquals(array('fail'), $log);
+        $this->assertEquals(['fail'], $log);
 
         $child3->resolve();
-        $this->assertEquals(array('fail'), $log);
+        $this->assertEquals(['fail'], $log);
     }
 
     public function testNested()
     {
         $child1a = new Deferred();
         $child1b = new Deferred();
-        $child1 = new DeferredAggregate(array($child1a, $child1b));
+        $child1 = new DeferredAggregate([$child1a, $child1b]);
         $child2 = new Deferred();
 
-        $defer = new DeferredAggregate(array($child1, $child2));
+        $defer = new DeferredAggregate([$child1, $child2]);
 
         $child1a->resolve();
         $child1b->resolve();
@@ -117,15 +120,15 @@ class DeferredAggregateTest extends \PHPUnit_Framework_TestCase
     public function testFail()
     {
         $child = new Deferred();
-        $defer = new DeferredAggregate(array($child));
+        $defer = new DeferredAggregate([$child]);
 
-        $log = array();
-        $defer->fail(function() use(& $log) {
+        $log = [];
+        $defer->fail(function () use (&$log) {
             $log[] = 'fail';
         });
 
         $child->reject();
 
-        $this->assertEquals(array('fail'), $log);
+        $this->assertEquals(['fail'], $log);
     }
 }

@@ -70,7 +70,7 @@ class BatchJob
             $this->setCallback($callback);
         }
 
-        return $this->manager->fork($this)->setName($this->name.' batch');
+        return $this->manager->fork($this)->setName($this->name . ' batch');
     }
 
     /**

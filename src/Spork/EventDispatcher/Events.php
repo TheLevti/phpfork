@@ -16,10 +16,10 @@ final class Events
     /**
      * Dispatched in the parent process before forking.
      */
-    const PRE_FORK = 'spork.pre_fork';
+    public const PRE_FORK = 'spork.pre_fork';
 
     /**
      * Notifies in the child process after forking.
      */
-    const POST_FORK = 'spork.post_fork';
+    public const POST_FORK = 'spork.post_fork';
 }

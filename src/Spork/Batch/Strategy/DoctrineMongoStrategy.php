@@ -13,5 +13,5 @@ namespace Spork\Batch\Strategy;
 
 class DoctrineMongoStrategy extends MongoStrategy
 {
-    const DATA_CLASS = 'Doctrine\MongoDB\Cursor';
+    public const DATA_CLASS = 'Doctrine\MongoDB\Cursor';
 }

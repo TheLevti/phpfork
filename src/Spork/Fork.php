@@ -58,7 +58,7 @@ class Fork implements DeferredInterface
         }
 
         if (-1 === $pid = pcntl_waitpid($this->pid, $status, ($hang ? 0 : WNOHANG) | WUNTRACED)) {
-            throw new ProcessControlException('Error while waiting for process '.$this->pid);
+            throw new ProcessControlException('Error while waiting for process ' . $this->pid);
         }
 
         if ($this->pid === $pid) {

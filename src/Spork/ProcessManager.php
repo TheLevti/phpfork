@@ -11,6 +11,7 @@
 
 namespace Spork;
 
+use InvalidArgumentException;
 use Spork\Batch\Strategy\StrategyInterface;
 use Spork\EventDispatcher\EventDispatcher;
 use Spork\EventDispatcher\EventDispatcherInterface;
@@ -106,7 +107,7 @@ class ProcessManager
             $message = new ExitMessage();
 
             // phone home on shutdown
-            register_shutdown_function(function() use($shm, $message) {
+            register_shutdown_function(function () use ($shm, $message) {
                 $status = null;
 
                 try {
@@ -190,7 +191,7 @@ class ProcessManager
     public function waitFor($pid, $hang = true)
     {
         if (!isset($this->forks[$pid])) {
-            throw new \InvalidArgumentException('There is no fork with PID '.$pid);
+            throw new InvalidArgumentException('There is no fork with PID ' . $pid);
         }
 
         return $this->forks[$pid]->wait($hang);
