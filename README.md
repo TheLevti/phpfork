@@ -8,7 +8,7 @@
 
 PHP on a fork.
 
-thelevti/spork follows semantic versioning. Read more on [semver.org][1].
+`thelevti/spork` follows semantic versioning. Read more on [semver.org][1].
 
 ----
 
