@@ -1,6 +1,6 @@
 {
     "name": "thelevti/spork",
-    "description": "PHP on a Fork.",
+    "description": "PHP on a fork.",
     "type": "library",
     "keywords": [
         "php",
