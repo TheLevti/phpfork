@@ -21,3 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use shared memory for interprocess communications (@MattJaniszewski).
 - Added progress callbacks to Deferred.
 - Added serializable objects for exit and error messages.
+
+[Unreleased]: https://github.com/TheLevti/spork/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/TheLevti/spork/releases/0.3.0
