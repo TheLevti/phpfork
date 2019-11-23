@@ -11,8 +11,6 @@
 
 namespace Spork\Util;
 
-use Spork\Util\ThrottleIterator;
-
 class ThrottleIteratorStub extends ThrottleIterator
 {
     public $loads = [];

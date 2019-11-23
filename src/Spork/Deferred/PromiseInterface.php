@@ -13,7 +13,7 @@ namespace Spork\Deferred;
 
 interface PromiseInterface
 {
-    public const STATE_PENDING  = 'pending';
+    public const STATE_PENDING = 'pending';
     public const STATE_RESOLVED = 'resolved';
     public const STATE_REJECTED = 'rejected';
 

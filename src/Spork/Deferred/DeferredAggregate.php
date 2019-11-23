@@ -32,7 +32,7 @@ class DeferredAggregate implements PromiseInterface
 
         // connect to each child
         foreach ($this->children as $child) {
-            $child->always(array($this, 'tick'));
+            $child->always([$this, 'tick']);
         }
 
         // always tick once now

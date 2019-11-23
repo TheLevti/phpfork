@@ -12,7 +12,6 @@
 namespace Spork\Batch\Strategy;
 
 use PHPUnit\Framework\TestCase;
-use Spork\Batch\Strategy\MongoStrategy;
 use Spork\EventDispatcher\Events;
 use Spork\ProcessManager;
 

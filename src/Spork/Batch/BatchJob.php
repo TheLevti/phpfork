@@ -80,7 +80,7 @@ class BatchJob
      */
     public function __invoke()
     {
-        $forks = array();
+        $forks = [];
         foreach ($this->strategy->createBatches($this->data) as $index => $batch) {
             $forks[] = $this->manager
                 ->fork($this->strategy->createRunner($batch, $this->callback))
@@ -91,7 +91,7 @@ class BatchJob
         // block until all forks have exited
         $this->manager->wait();
 
-        $results = array();
+        $results = [];
         foreach ($forks as $fork) {
             $results = array_merge($results, $fork->getResult());
         }

@@ -13,8 +13,6 @@ namespace Spork;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
-use Spork\Fork;
-use Spork\ProcessManager;
 
 class ProcessManagerTest extends TestCase
 {

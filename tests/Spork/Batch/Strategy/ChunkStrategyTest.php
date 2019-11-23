@@ -12,7 +12,6 @@
 namespace Spork\Batch\Strategy;
 
 use PHPUnit\Framework\TestCase;
-use Spork\Batch\Strategy\ChunkStrategy;
 
 class ChunkStrategyTest extends TestCase
 {

@@ -18,8 +18,8 @@ interface DeferredInterface extends PromiseInterface
      *
      * @param mixed $args Any arguments will be passed along to the callbacks
      *
-     * @return DeferredInterface The current promise
      * @throws \LogicException   If the promise is not pending
+     * @return DeferredInterface The current promise
      */
     public function notify();
 
@@ -30,8 +30,8 @@ interface DeferredInterface extends PromiseInterface
      *
      * @param mixed $args Any arguments will be passed along to the callbacks
      *
-     * @return DeferredInterface The current promise
      * @throws \LogicException   If the promise was previously rejected
+     * @return DeferredInterface The current promise
      */
     public function resolve();
 
@@ -42,8 +42,8 @@ interface DeferredInterface extends PromiseInterface
      *
      * @param mixed $args Any arguments will be passed along to the callbacks
      *
-     * @return DeferredInterface The current promise
      * @throws \LogicException   If the promise was previously resolved
+     * @return DeferredInterface The current promise
      */
     public function reject();
 }

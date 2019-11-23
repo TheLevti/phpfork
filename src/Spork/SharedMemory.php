@@ -32,14 +32,14 @@ class SharedMemory
     {
         if (null === $pid) {
             // child
-            $pid   = posix_getpid();
-            $ppid  = posix_getppid();
+            $pid = posix_getpid();
+            $ppid = posix_getppid();
         } else {
             // parent
-            $ppid  = null;
+            $ppid = null;
         }
 
-        $this->pid  = $pid;
+        $this->pid = $pid;
         $this->ppid = $ppid;
         $this->signal = $signal;
     }
@@ -59,7 +59,7 @@ class SharedMemory
             return unserialize($serializedMessages);
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -71,7 +71,7 @@ class SharedMemory
      */
     public function send($message, $signal = null, $pause = 500)
     {
-        $messageArray = array();
+        $messageArray = [];
 
         if (($shmId = @shmop_open($this->pid, 'a', 0, 0)) > 0) {
             // Read any existing messages in shared memory

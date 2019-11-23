@@ -48,10 +48,10 @@ class MongoStrategy extends AbstractStrategy
             throw new UnexpectedTypeException($cursor, $expected);
         }
 
-        $skip  = $this->skip;
+        $skip = $this->skip;
         $limit = ceil(($cursor->count(true) - $skip) / $this->size);
 
-        $batches = array();
+        $batches = [];
         for ($i = 0; $i < $this->size; $i++) {
             $batches[] = function () use ($cursor, $skip, $i, $limit) {
                 return $cursor->skip($skip + $i * $limit)->limit($limit);

@@ -38,7 +38,7 @@ class ProcessManager
         $this->factory = $factory ?: new Factory();
         $this->debug = $debug;
         $this->zombieOkay = false;
-        $this->forks = array();
+        $this->forks = [];
     }
 
     public function __destruct()
@@ -100,7 +100,7 @@ class ProcessManager
 
         if (0 === $pid) {
             // reset the list of child processes
-            $this->forks = array();
+            $this->forks = [];
 
             // setup the shared memory
             $shm = $this->factory->createSharedMemory(null, $this->signal);
@@ -156,7 +156,7 @@ class ProcessManager
     public function monitor($signal = SIGUSR1)
     {
         $this->signal = $signal;
-        $this->dispatcher->addSignalListener($signal, array($this, 'check'));
+        $this->dispatcher->addSignalListener($signal, [$this, 'check']);
     }
 
     public function check()

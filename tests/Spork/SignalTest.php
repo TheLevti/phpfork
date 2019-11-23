@@ -12,8 +12,6 @@
 namespace Spork;
 
 use PHPUnit\Framework\TestCase;
-use Spork\ProcessManager;
-use Spork\SharedMemory;
 
 class SignalTest extends TestCase
 {

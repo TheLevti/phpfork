@@ -13,7 +13,6 @@ namespace Spork\Deferred;
 
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use Spork\Deferred\Deferred;
 use Spork\Exception\UnexpectedTypeException;
 
 class DeferredTest extends TestCase

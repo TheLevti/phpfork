@@ -12,8 +12,6 @@
 namespace Spork\Deferred;
 
 use PHPUnit\Framework\TestCase;
-use Spork\Deferred\Deferred;
-use Spork\Deferred\DeferredAggregate;
 use Spork\Exception\UnexpectedTypeException;
 
 class DeferredAggregateTest extends TestCase
