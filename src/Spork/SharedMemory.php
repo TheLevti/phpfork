@@ -32,14 +32,14 @@ class SharedMemory
     {
         if (null === $pid) {
             // child
-            $pid   = posix_getpid();
-            $ppid  = posix_getppid();
+            $pid = posix_getpid();
+            $ppid = posix_getppid();
         } else {
             // parent
-            $ppid  = null;
+            $ppid = null;
         }
 
-        $this->pid  = $pid;
+        $this->pid = $pid;
         $this->ppid = $ppid;
         $this->signal = $signal;
     }
@@ -59,7 +59,7 @@ class SharedMemory
             return unserialize($serializedMessages);
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -71,7 +71,7 @@ class SharedMemory
      */
     public function send($message, $signal = null, $pause = 500)
     {
-        $messageArray = array();
+        $messageArray = [];
 
         if (($shmId = @shmop_open($this->pid, 'a', 0, 0)) > 0) {
             // Read any existing messages in shared memory
@@ -88,8 +88,11 @@ class SharedMemory
         // Write new serialized message to shared memory
         $shmId = shmop_open($this->pid, 'c', 0644, strlen($serializedMessage));
         if (!$shmId) {
-            throw new ProcessControlException(sprintf('Not able to create shared memory segment for PID: %s', $this->pid));
-        } else if (shmop_write($shmId, $serializedMessage, 0) !== strlen($serializedMessage)) {
+            throw new ProcessControlException(sprintf(
+                'Not able to create shared memory segment for PID: %s',
+                $this->pid
+            ));
+        } elseif (shmop_write($shmId, $serializedMessage, 0) !== strlen($serializedMessage)) {
             throw new ProcessControlException(
                 sprintf('Not able to write message to shared memory segment for segment ID: %s', $shmId)
             );

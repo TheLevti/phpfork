@@ -49,11 +49,11 @@ class ExitMessage implements \Serializable
 
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             $this->result,
             $this->output,
             $this->error,
-        ));
+        ]);
     }
 
     public function unserialize($str)

@@ -11,6 +11,7 @@
 
 namespace Spork;
 
+use InvalidArgumentException;
 use Spork\Batch\Strategy\StrategyInterface;
 use Spork\EventDispatcher\EventDispatcher;
 use Spork\EventDispatcher\EventDispatcherInterface;
@@ -37,7 +38,7 @@ class ProcessManager
         $this->factory = $factory ?: new Factory();
         $this->debug = $debug;
         $this->zombieOkay = false;
-        $this->forks = array();
+        $this->forks = [];
     }
 
     public function __destruct()
@@ -99,14 +100,14 @@ class ProcessManager
 
         if (0 === $pid) {
             // reset the list of child processes
-            $this->forks = array();
+            $this->forks = [];
 
             // setup the shared memory
             $shm = $this->factory->createSharedMemory(null, $this->signal);
             $message = new ExitMessage();
 
             // phone home on shutdown
-            register_shutdown_function(function() use($shm, $message) {
+            register_shutdown_function(function () use ($shm, $message) {
                 $status = null;
 
                 try {
@@ -155,7 +156,7 @@ class ProcessManager
     public function monitor($signal = SIGUSR1)
     {
         $this->signal = $signal;
-        $this->dispatcher->addSignalListener($signal, array($this, 'check'));
+        $this->dispatcher->addSignalListener($signal, [$this, 'check']);
     }
 
     public function check()
@@ -190,7 +191,7 @@ class ProcessManager
     public function waitFor($pid, $hang = true)
     {
         if (!isset($this->forks[$pid])) {
-            throw new \InvalidArgumentException('There is no fork with PID '.$pid);
+            throw new InvalidArgumentException('There is no fork with PID ' . $pid);
         }
 
         return $this->forks[$pid]->wait($hang);

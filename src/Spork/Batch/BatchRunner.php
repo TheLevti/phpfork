@@ -46,7 +46,7 @@ class BatchRunner
             $this->batch = call_user_func($this->batch);
         }
 
-        $results = array();
+        $results = [];
         foreach ($this->batch as $index => $item) {
             $results[$index] = call_user_func($this->callback, $item, $index, $this->batch, $shm);
         }

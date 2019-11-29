@@ -13,9 +13,9 @@ namespace Spork\Deferred;
 
 interface PromiseInterface
 {
-    const STATE_PENDING  = 'pending';
-    const STATE_RESOLVED = 'resolved';
-    const STATE_REJECTED = 'rejected';
+    public const STATE_PENDING = 'pending';
+    public const STATE_RESOLVED = 'resolved';
+    public const STATE_REJECTED = 'rejected';
 
     /**
      * Returns the promise state.
@@ -26,7 +26,7 @@ interface PromiseInterface
      *
      * @return string A promise state constant
      */
-    function getState();
+    public function getState();
 
     /**
      * Adds a callback to be called upon progress.
@@ -35,7 +35,7 @@ interface PromiseInterface
      *
      * @return PromiseInterface The current promise
      */
-    function progress($progress);
+    public function progress($progress);
 
     /**
      * Adds a callback to be called whether the promise is resolved or rejected.
@@ -47,7 +47,7 @@ interface PromiseInterface
      *
      * @return PromiseInterface The current promise
      */
-    function always($always);
+    public function always($always);
 
     /**
      * Adds a callback to be called when the promise completes successfully.
@@ -58,7 +58,7 @@ interface PromiseInterface
      *
      * @return PromiseInterface The current promise
      */
-    function done($done);
+    public function done($done);
 
     /**
      * Adds a callback to be called when the promise fails.
@@ -69,7 +69,7 @@ interface PromiseInterface
      *
      * @return PromiseInterface The current promise
      */
-    function fail($fail);
+    public function fail($fail);
 
     /**
      * Adds done and fail callbacks.
@@ -79,5 +79,5 @@ interface PromiseInterface
      *
      * @return PromiseInterface The current promise
      */
-    function then($done, $fail = null);
+    public function then($done, $fail = null);
 }

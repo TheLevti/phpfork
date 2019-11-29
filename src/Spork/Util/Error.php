@@ -83,13 +83,13 @@ class Error implements \Serializable
 
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             $this->class,
             $this->message,
             $this->file,
             $this->line,
             $this->code,
-        ));
+        ]);
     }
 
     public function unserialize($str)

@@ -9,20 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Spork\Test\Deferred;
+namespace Spork\Deferred;
 
-use Spork\Deferred\Deferred;
+use LogicException;
+use PHPUnit\Framework\TestCase;
+use Spork\Exception\UnexpectedTypeException;
 
-class DeferredTest extends \PHPUnit_Framework_TestCase
+class DeferredTest extends TestCase
 {
     private $defer;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->defer = new Deferred();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->defer);
     }
@@ -32,27 +34,27 @@ class DeferredTest extends \PHPUnit_Framework_TestCase
      */
     public function testCallbackOrder($method, $expected)
     {
-        $log = array();
+        $log = [];
 
-        $this->defer->always(function() use(& $log) {
+        $this->defer->always(function () use (&$log) {
             $log[] = 'always';
             $log[] = func_get_args();
-        })->done(function() use(& $log) {
+        })->done(function () use (&$log) {
             $log[] = 'done';
             $log[] = func_get_args();
-        })->fail(function() use(& $log) {
+        })->fail(function () use (&$log) {
             $log[] = 'fail';
             $log[] = func_get_args();
         });
 
         $this->defer->$method(1, 2, 3);
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'always',
-            array(1, 2, 3),
+            [1, 2, 3],
             $expected,
-            array(1, 2, 3),
-        ), $log);
+            [1, 2, 3],
+        ], $log);
     }
 
     /**
@@ -60,17 +62,17 @@ class DeferredTest extends \PHPUnit_Framework_TestCase
      */
     public function testThen($method, $expected)
     {
-        $log = array();
+        $log = [];
 
-        $this->defer->then(function() use(& $log) {
+        $this->defer->then(function () use (&$log) {
             $log[] = 'done';
-        }, function() use(& $log) {
+        }, function () use (&$log) {
             $log[] = 'fail';
         });
 
         $this->defer->$method();
 
-        $this->assertEquals(array($expected), $log);
+        $this->assertEquals([$expected], $log);
     }
 
     /**
@@ -78,16 +80,16 @@ class DeferredTest extends \PHPUnit_Framework_TestCase
      */
     public function testMultipleResolve($method)
     {
-        $log = array();
+        $log = [];
 
-        $this->defer->always(function() use(& $log) {
+        $this->defer->always(function () use (&$log) {
             $log[] = 'always';
         });
 
         $this->defer->$method();
         $this->defer->$method();
 
-        $this->assertEquals(array('always'), $log);
+        $this->assertEquals(['always'], $log);
     }
 
     /**
@@ -95,7 +97,8 @@ class DeferredTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidResolve($method, $invalid)
     {
-        $this->setExpectedException('LogicException', 'that has already been');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('that has already been');
 
         $this->defer->$method();
         $this->defer->$invalid();
@@ -109,12 +112,12 @@ class DeferredTest extends \PHPUnit_Framework_TestCase
         // resolve the object
         $this->defer->$resolve();
 
-        $log = array();
-        $this->defer->$queue(function() use(& $log, $queue) {
+        $log = [];
+        $this->defer->$queue(function () use (&$log, $queue) {
             $log[] = $queue;
         });
 
-        $this->assertEquals($expect ? array($queue) : array(), $log);
+        $this->assertEquals($expect ? [$queue] : [], $log);
     }
 
     /**
@@ -122,7 +125,8 @@ class DeferredTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidCallback($method, $invalid)
     {
-        $this->setExpectedException('Spork\Exception\UnexpectedTypeException', 'callable');
+        $this->expectException(UnexpectedTypeException::class);
+        $this->expectExceptionMessage('callable');
 
         $this->defer->$method($invalid);
     }
@@ -131,49 +135,49 @@ class DeferredTest extends \PHPUnit_Framework_TestCase
 
     public function getMethodAndKey()
     {
-        return array(
-            array('resolve', 'done'),
-            array('reject', 'fail'),
-        );
+        return [
+            ['resolve', 'done'],
+            ['reject', 'fail'],
+        ];
     }
 
     public function getMethodAndInvalid()
     {
-        return array(
-            array('resolve', 'reject'),
-            array('reject', 'resolve'),
-        );
+        return [
+            ['resolve', 'reject'],
+            ['reject', 'resolve'],
+        ];
     }
 
     public function getMethodAndQueue()
     {
-        return array(
-            array('resolve', 'always'),
-            array('resolve', 'done'),
-            array('resolve', 'fail', false),
-            array('reject', 'always'),
-            array('reject', 'done', false),
-            array('reject', 'fail'),
-        );
+        return [
+            ['resolve', 'always'],
+            ['resolve', 'done'],
+            ['resolve', 'fail', false],
+            ['reject', 'always'],
+            ['reject', 'done', false],
+            ['reject', 'fail'],
+        ];
     }
 
     public function getMethodAndInvalidCallback()
     {
-        return array(
-            array('always', 'foo!'),
-            array('always', array('foo!')),
-            array('done', 'foo!'),
-            array('done', array('foo!')),
-            array('fail', 'foo!'),
-            array('fail', array('foo!')),
-        );
+        return [
+            ['always', 'foo!'],
+            ['always', ['foo!']],
+            ['done', 'foo!'],
+            ['done', ['foo!']],
+            ['fail', 'foo!'],
+            ['fail', ['foo!']],
+        ];
     }
 
     public function getMethod()
     {
-        return array(
-            array('resolve'),
-            array('reject'),
-        );
+        return [
+            ['resolve'],
+            ['reject'],
+        ];
     }
 }

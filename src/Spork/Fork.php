@@ -30,10 +30,10 @@ class Fork implements DeferredInterface
     public function __construct($pid, SharedMemory $shm, $debug = false)
     {
         $this->defer = new Deferred();
-        $this->pid   = $pid;
-        $this->shm   = $shm;
+        $this->pid = $pid;
+        $this->shm = $shm;
         $this->debug = $debug;
-        $this->name  = '<anonymous>';
+        $this->name = '<anonymous>';
     }
 
     /**
@@ -58,7 +58,7 @@ class Fork implements DeferredInterface
         }
 
         if (-1 === $pid = pcntl_waitpid($this->pid, $status, ($hang ? 0 : WNOHANG) | WUNTRACED)) {
-            throw new ProcessControlException('Error while waiting for process '.$this->pid);
+            throw new ProcessControlException('Error while waiting for process ' . $this->pid);
         }
 
         if ($this->pid === $pid) {
@@ -92,7 +92,7 @@ class Fork implements DeferredInterface
 
     public function receive()
     {
-        $messages = array();
+        $messages = [];
 
         foreach ($this->shm->receive() as $message) {
             if ($message instanceof ExitMessage) {
@@ -221,7 +221,7 @@ class Fork implements DeferredInterface
         $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array(array($this->defer, 'notify'), $args);
+        call_user_func_array([$this->defer, 'notify'], $args);
 
         return $this;
     }
@@ -231,7 +231,7 @@ class Fork implements DeferredInterface
         $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array(array($this->defer, 'resolve'), $args);
+        call_user_func_array([$this->defer, 'resolve'], $args);
 
         return $this;
     }
@@ -241,7 +241,7 @@ class Fork implements DeferredInterface
         $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array(array($this->defer, 'reject'), $args);
+        call_user_func_array([$this->defer, 'reject'], $args);
 
         return $this;
     }

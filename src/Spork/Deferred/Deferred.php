@@ -26,10 +26,10 @@ class Deferred implements DeferredInterface
     {
         $this->state = DeferredInterface::STATE_PENDING;
 
-        $this->progressCallbacks = array();
-        $this->alwaysCallbacks = array();
-        $this->doneCallbacks = array();
-        $this->failCallbacks = array();
+        $this->progressCallbacks = [];
+        $this->alwaysCallbacks = [];
+        $this->doneCallbacks = [];
+        $this->failCallbacks = [];
     }
 
     public function getState()
