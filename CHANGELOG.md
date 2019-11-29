@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2019-11-29
+
 ### Changed
 
 - #1: PHP 7.2 min requirement and updated library to support it.
 - #4: Added DBAL usage documentation and updated existing examples.
 - 2d0951d: Applied PSR12 and additional rules to library.
+
+### Removed
+
+- #1: Removed support for PHP <7.2
 
 ## [0.3.0] - 2015-05-18
 
