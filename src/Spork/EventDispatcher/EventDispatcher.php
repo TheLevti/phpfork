@@ -1,38 +1,25 @@
 <?php
 
 /*
- * This file is part of Spork, an OpenSky project.
+ * This file is part of the thelevti/spork package.
  *
- * (c) OpenSky Project Inc
+ * (c) Petr Levtonov <petr@levtonov.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-declare(ticks=1);
+declare(strict_types=1);
 
 namespace Spork\EventDispatcher;
 
-use Symfony\Component\EventDispatcher\EventDispatcher as BaseEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcher as BaseClass;
 
 /**
- * Adds support for listening to signals.
+ * Extends the core event dispatcher with signal handling capabilities. Add and
+ * remove signal listeners or dispatch a signal directly.
  */
-class EventDispatcher extends BaseEventDispatcher implements EventDispatcherInterface
+class EventDispatcher extends BaseClass implements EventDispatcherInterface
 {
-    public function dispatchSignal($signal)
-    {
-        $this->dispatch('spork.signal.' . $signal);
-    }
-
-    public function addSignalListener($signal, $callable, $priority = 0)
-    {
-        $this->addListener('spork.signal.' . $signal, $callable, $priority);
-        pcntl_signal($signal, [$this, 'dispatchSignal']);
-    }
-
-    public function removeSignalListener($signal, $callable)
-    {
-        $this->removeListener('spork.signal.' . $signal, $callable);
-    }
+    use EventDispatcherTrait;
 }
