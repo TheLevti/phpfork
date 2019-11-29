@@ -4,7 +4,7 @@
 
 # thelevti/spork
 
-[![Build Status](https://travis-ci.com/TheLevti/spork.svg?branch=develop)](https://travis-ci.com/TheLevti/spork)
+[![Build Status](https://travis-ci.com/TheLevti/spork.svg?branch=master)](https://travis-ci.com/TheLevti/spork)
 
 PHP on a fork.
 
