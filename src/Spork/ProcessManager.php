@@ -20,12 +20,14 @@ use Spork\Exception\ProcessControlException;
 use Spork\Exception\UnexpectedTypeException;
 use Spork\Util\Error;
 use Spork\Util\ExitMessage;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ProcessManager
 {
     private $dispatcher;
     private $factory;
     private $debug;
+    /** @var bool $zombieOkay */
     private $zombieOkay;
     private $signal;
 
@@ -92,7 +94,7 @@ class ProcessManager
         }
 
         // allow the system to cleanup before forking
-        $this->dispatcher->dispatch(Events::PRE_FORK);
+        call_user_func([$this->dispatcher, 'dispatch'], new Event(), Events::PRE_FORK);
 
         if (-1 === $pid = pcntl_fork()) {
             throw new ProcessControlException('Unable to fork a new process');
@@ -124,7 +126,7 @@ class ProcessManager
             });
 
             // dispatch an event so the system knows it's in a new process
-            $this->dispatcher->dispatch(Events::POST_FORK);
+            call_user_func([$this->dispatcher, 'dispatch'], new Event(), Events::POST_FORK);
 
             if (!$this->debug) {
                 ob_start();

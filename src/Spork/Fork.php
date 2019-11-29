@@ -221,7 +221,7 @@ class Fork implements DeferredInterface
         $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array([$this->defer, 'notify'], $args);
+        call_user_func_array([$this->defer, 'notify'], array_values($args));
 
         return $this;
     }
@@ -231,7 +231,7 @@ class Fork implements DeferredInterface
         $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array([$this->defer, 'resolve'], $args);
+        call_user_func_array([$this->defer, 'resolve'], array_values($args));
 
         return $this;
     }
@@ -241,7 +241,7 @@ class Fork implements DeferredInterface
         $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array([$this->defer, 'reject'], $args);
+        call_user_func_array([$this->defer, 'reject'], array_values($args));
 
         return $this;
     }

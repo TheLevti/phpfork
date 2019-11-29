@@ -15,10 +15,15 @@ use Spork\Exception\UnexpectedTypeException;
 
 class Deferred implements DeferredInterface
 {
+    /** @var string $state */
     private $state;
+    /** @var array $progressCallbacks */
     private $progressCallbacks;
+    /** @var array $alwaysCallbacks */
     private $alwaysCallbacks;
+    /** @var array $doneCallbacks */
     private $doneCallbacks;
+    /** @var array $failCallbacks */
     private $failCallbacks;
     private $callbackArgs;
 

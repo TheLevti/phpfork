@@ -15,10 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class SignalTest extends TestCase
 {
-    /** @var \Spork\ProcessManager $manager */
     private $manager;
-
-    /** @var bool $async */
     private $async;
 
     protected function setUp(): void
