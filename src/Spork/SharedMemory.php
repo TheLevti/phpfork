@@ -18,7 +18,9 @@ use Spork\Exception\ProcessControlException;
  */
 class SharedMemory
 {
+    /** @var int $pid */
     private $pid;
+    /** @var int|null $pid */
     private $ppid;
     private $signal;
 
@@ -51,7 +53,7 @@ class SharedMemory
      */
     public function receive()
     {
-        if (($shmId = @shmop_open($this->pid, 'a', 0, 0)) > 0) {
+        if ($shmId = @shmop_open($this->pid, 'a', 0, 0)) {
             $serializedMessages = shmop_read($shmId, 0, shmop_size($shmId));
             shmop_delete($shmId);
             shmop_close($shmId);
@@ -65,15 +67,15 @@ class SharedMemory
     /**
      * Writes a message to the shared memory.
      *
-     * @param mixed   $message The message to send
-     * @param integer $signal  The signal to send afterward
-     * @param integer $pause   The number of microseconds to pause after signalling
+     * @param mixed          $message The message to send
+     * @param int|null|false $signal  The signal to send afterward. Null to use
+     * @param int            $pause   The number of microseconds to pause after signalling
      */
     public function send($message, $signal = null, $pause = 500)
     {
         $messageArray = [];
 
-        if (($shmId = @shmop_open($this->pid, 'a', 0, 0)) > 0) {
+        if ($shmId = @shmop_open($this->pid, 'a', 0, 0)) {
             // Read any existing messages in shared memory
             $readMessage = shmop_read($shmId, 0, shmop_size($shmId));
             $messageArray[] = unserialize($readMessage);
@@ -87,14 +89,14 @@ class SharedMemory
 
         // Write new serialized message to shared memory
         $shmId = shmop_open($this->pid, 'c', 0644, strlen($serializedMessage));
-        if (!$shmId) {
+        if (!is_resource($shmId)) {
             throw new ProcessControlException(sprintf(
                 'Not able to create shared memory segment for PID: %s',
                 $this->pid
             ));
         } elseif (shmop_write($shmId, $serializedMessage, 0) !== strlen($serializedMessage)) {
             throw new ProcessControlException(
-                sprintf('Not able to write message to shared memory segment for segment ID: %s', $shmId)
+                'Not able to write message to shared memory segment.'
             );
         }
 
@@ -102,7 +104,8 @@ class SharedMemory
             return;
         }
 
-        $this->signal($signal ?: $this->signal);
+        $this->signal(null === $signal ? $this->signal : $signal);
+
         usleep($pause);
     }
 

@@ -14,6 +14,7 @@ declare(ticks=1);
 namespace Spork\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\EventDispatcher as BaseEventDispatcher;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Adds support for listening to signals.
@@ -22,7 +23,7 @@ class EventDispatcher extends BaseEventDispatcher implements EventDispatcherInte
 {
     public function dispatchSignal($signal)
     {
-        $this->dispatch('spork.signal.' . $signal);
+        $this->dispatch(new Event(), 'spork.signal.' . $signal);
     }
 
     public function addSignalListener($signal, $callable, $priority = 0)

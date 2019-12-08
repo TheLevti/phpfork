@@ -13,22 +13,22 @@ declare(ticks=1);
 
 namespace Spork\EventDispatcher;
 
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as BaseEventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface as BaseInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class WrappedEventDispatcher implements EventDispatcherInterface
 {
     private $delegate;
 
-    public function __construct(BaseEventDispatcherInterface $delegate)
+    public function __construct(BaseInterface $delegate)
     {
         $this->delegate = $delegate;
     }
 
     public function dispatchSignal($signal)
     {
-        $this->delegate->dispatch('spork.signal.' . $signal);
+        $this->dispatch(new Event(), 'spork.signal.' . $signal);
     }
 
     public function addSignalListener($signal, $callable, $priority = 0)
@@ -42,9 +42,9 @@ class WrappedEventDispatcher implements EventDispatcherInterface
         $this->delegate->removeListener('spork.signal.' . $signal, $callable);
     }
 
-    public function dispatch($eventName, Event $event = null)
+    public function dispatch($event, string $eventName = null)
     {
-        return $this->delegate->dispatch($eventName, $event);
+        return call_user_func([$this->delegate, 'dispatch'], ...func_get_args());
     }
 
     public function addListener($eventName, $listener, $priority = 0)

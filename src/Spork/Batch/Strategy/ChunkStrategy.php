@@ -37,7 +37,7 @@ class ChunkStrategy extends AbstractStrategy
             $data = iterator_to_array($data);
         }
 
-        $size = ceil(count($data) / $this->forks);
+        $size = (int)ceil(count($data) / $this->forks);
 
         return array_chunk($data, $size, $this->preserveKeys);
     }
