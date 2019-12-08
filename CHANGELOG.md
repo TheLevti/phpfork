@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2019-11-29
 
+### Added
+
+- d806fe4: Added phpstan to travis for static code analysis.
+
 ### Changed
 
 - #1: PHP 7.2 min requirement and updated library to support it.
@@ -17,7 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- #1: Removed support for PHP <7.2
+- #1: Removed support for PHP <7.2.
+- d806fe4: Removed deprecated mongo db support.
+
+### Fixed
+
+- d806fe4: Fixed static code analysis issues.
 
 ## [0.3.0] - 2015-05-18
 
@@ -29,4 +38,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added serializable objects for exit and error messages.
 
 [Unreleased]: https://github.com/TheLevti/spork/compare/0.3.0...HEAD
+[1.0.0]: https://github.com/TheLevti/spork/releases/1.0.0
 [0.3.0]: https://github.com/TheLevti/spork/releases/0.3.0
