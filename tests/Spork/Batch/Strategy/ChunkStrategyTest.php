@@ -23,10 +23,13 @@ class ChunkStrategyTest extends TestCase
         $strategy = new ChunkStrategy($number);
         $batches = $strategy->createBatches(range(1, 100));
 
-        $this->assertEquals(count($expectedCounts), count($batches));
+        $batchesCount = 0;
         foreach ($batches as $i => $batch) {
+            ++$batchesCount;
             $this->assertCount($expectedCounts[$i], $batch);
         }
+
+        $this->assertEquals(count($expectedCounts), $batchesCount);
     }
 
     public function provideNumber()

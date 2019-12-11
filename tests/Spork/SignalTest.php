@@ -19,10 +19,7 @@ use Spork\EventDispatcher\SignalEvent;
 
 class SignalTest extends TestCase
 {
-    /** @var \Spork\ProcessManager $manager */
     private $manager;
-
-    /** @var bool $async */
     private $async;
 
     /** @var int $errorReporting */

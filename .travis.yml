@@ -9,6 +9,7 @@ cache:
 php:
   - 7.2
   - 7.3
+  - 7.4
   - nightly
 
 matrix:
@@ -20,5 +21,6 @@ install:
   - composer install --no-progress --no-scripts --no-suggest --no-interaction
 
 script:
-  - vendor/bin/phpunit --coverage-text
   - vendor/bin/phpcs --standard=PSR12 src/ tests/
+  - vendor/bin/phpstan analyse --no-progress --no-ansi --no-interaction
+  - vendor/bin/phpunit --no-interaction --colors=never

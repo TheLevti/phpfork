@@ -65,7 +65,7 @@ interface PromiseInterface
      *
      * The callback will be called immediately if the promise state is rejected.
      *
-     * @param callable $done The callback
+     * @param callable $fail The callback
      *
      * @return PromiseInterface The current promise
      */
