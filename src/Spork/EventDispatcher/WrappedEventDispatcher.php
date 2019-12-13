@@ -46,7 +46,7 @@ class WrappedEventDispatcher implements EventDispatcherInterface
      */
     public function dispatch($event, string $eventName = null)
     {
-        return $this->delegate->dispatch($event, $eventName);
+        return call_user_func([$this->delegate, 'dispatch'], $event, $eventName);
     }
 
     /**

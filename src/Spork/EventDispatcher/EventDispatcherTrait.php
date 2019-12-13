@@ -35,7 +35,9 @@ trait EventDispatcherTrait
     {
         $event = new SignalEvent($signo, $signinfo);
 
-        return $this->dispatch($event, $event->getName());
+        $this->dispatch($event, $event->getName());
+
+        return $event;
     }
 
     /**
@@ -47,6 +49,7 @@ trait EventDispatcherTrait
         int $priority = 0
     ): void {
         // 1. Preserve previous signal handler.
+        /** @var int|string|false $prevSigHandler */
         $prevSigHandler = pcntl_signal_get_handler($signo);
         if ($prevSigHandler === false) {
             $error = pcntl_get_last_error();
