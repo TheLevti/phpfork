@@ -19,10 +19,25 @@ use Spork\EventDispatcher\SignalEvent;
 
 class SignalTest extends TestCase
 {
-    private $manager;
+    /**
+     * Process manager instance.
+     *
+     * @var \Spork\ProcessManager $processManager
+     */
+    private $processManager;
+
+    /**
+     * Holds the previous pcntl async signals value.
+     *
+     * @var bool $async
+     */
     private $async;
 
-    /** @var int $errorReporting */
+    /**
+     * Holds the previous error reporting configuration.
+     *
+     * @var int $errorReporting
+     */
     private $errorReporting;
 
     protected function setUp(): void
@@ -31,22 +46,22 @@ class SignalTest extends TestCase
         $this->async = pcntl_async_signals();
         pcntl_async_signals(true);
 
-        $this->manager = new ProcessManager();
+        $this->processManager = new ProcessManager();
     }
 
     protected function tearDown(): void
     {
-        $this->manager = null;
+        $this->processManager->getEventDispatcher()->removeSignalHandlerWrappers();
 
         pcntl_async_signals($this->async);
         $this->errorReporting = error_reporting($this->errorReporting);
     }
 
-    public function testSignalParent()
+    public function testSingleListenerOneSignal()
     {
         $signaled = false;
 
-        $this->manager->addListener(
+        $this->processManager->addListener(
             SIGUSR1,
             function (
                 SignalEvent $event,
@@ -57,32 +72,139 @@ class SignalTest extends TestCase
 
                 $this->assertEquals(SIGUSR1, $event->getSigno());
 
-                $signoInfo = $event->getSigninfo();
-                if (is_array($signoInfo)) {
-                    $this->assertIsArray($signoInfo);
-                    $this->assertArrayHasKey('signo', $signoInfo);
-                    $this->assertEquals(SIGUSR1, $signoInfo['signo']);
-                    $this->assertArrayHasKey('errno', $signoInfo);
-                    $this->assertIsInt($signoInfo['errno']);
-                    $this->assertArrayHasKey('code', $signoInfo);
-                    $this->assertIsInt($signoInfo['code']);
-                    $this->assertArrayHasKey('pid', $signoInfo);
-                    $this->assertIsInt($signoInfo['pid']);
-                    $this->assertArrayHasKey('uid', $signoInfo);
-                    $this->assertIsInt($signoInfo['uid']);
+                $signinfo = $event->getSigninfo();
+                if (is_array($signinfo)) {
+                    $this->assertArrayHasKey('signo', $signinfo);
+                    if ($signinfo['signo'] !== SIGUSR1) {
+                        var_dump($signinfo);
+                    }
+                    $this->assertEquals(SIGUSR1, $signinfo['signo']);
+                    $this->assertArrayHasKey('errno', $signinfo);
+                    $this->assertIsInt($signinfo['errno']);
+                    $this->assertArrayHasKey('code', $signinfo);
+                    $this->assertIsInt($signinfo['code']);
+                    $this->assertArrayHasKey('pid', $signinfo);
+                    $this->assertIsInt($signinfo['pid']);
+                    $this->assertArrayHasKey('uid', $signinfo);
+                    $this->assertIsInt($signinfo['uid']);
                 }
 
                 $this->assertEquals(SignalEvent::getEventName(SIGUSR1), $eventName);
-                $this->assertEquals($this->manager->getEventDispatcher(), $dispatcher);
+                $this->assertEquals($this->processManager->getEventDispatcher(), $dispatcher);
             }
         );
 
-        $this->manager->fork(function (SharedMemory $sharedMem) {
+        $this->processManager->fork(function (SharedMemory $sharedMem) {
             $sharedMem->signal(SIGUSR1);
         });
 
-        $this->manager->wait();
+        $this->processManager->wait();
 
         $this->assertTrue($signaled);
+    }
+
+    public function testManyListenersOneSignal(): void
+    {
+        $sigFirst = false;
+        $sigSecond = false;
+
+        $this->processManager->addListener(SIGUSR1, function () use (&$sigFirst) {
+            $sigFirst = true;
+        });
+
+        $this->processManager->addListener(SIGUSR1, function () use (&$sigSecond) {
+            $sigSecond = true;
+        });
+
+        $this->processManager->fork(function (SharedMemory $sharedMem) {
+            $sharedMem->signal(SIGUSR1);
+        });
+
+        $this->processManager->wait();
+
+        $this->assertTrue($sigFirst);
+        $this->assertTrue($sigSecond);
+    }
+
+    public function testPreviousSignalHandler(): void
+    {
+        $testSig = SIGUSR1;
+        $sigOrig = 0;
+        $sigNew = 0;
+
+        $origSigHandler = function () use (&$sigOrig) {
+            ++$sigOrig;
+        };
+
+        $newSigHandler = function () use (&$sigNew) {
+            ++$sigNew;
+        };
+
+        pcntl_signal($testSig, $origSigHandler);
+
+        $this->assertEquals($origSigHandler, pcntl_signal_get_handler($testSig));
+        $this->assertEquals(0, $sigOrig);
+        $this->assertEquals(0, $sigNew);
+
+        posix_kill(posix_getpid(), $testSig);
+
+        $this->assertEquals(1, $sigOrig);
+        $this->assertEquals(0, $sigNew);
+
+        $this->processManager->addListener($testSig, $newSigHandler);
+
+        $currSigHandler = pcntl_signal_get_handler($testSig);
+        $this->assertNotEquals($origSigHandler, $currSigHandler);
+        $this->assertEquals(1, $sigOrig);
+        $this->assertEquals(0, $sigNew);
+
+        $this->processManager->fork(function (SharedMemory $sharedMem) use (&$testSig) {
+            $sharedMem->signal($testSig);
+        });
+
+        $this->processManager->wait();
+
+        $this->assertEquals(2, $sigOrig);
+        $this->assertEquals(1, $sigNew);
+
+        posix_kill(posix_getpid(), $testSig);
+
+        $this->assertEquals(3, $sigOrig);
+        $this->assertEquals(2, $sigNew);
+
+        $this->processManager->getEventDispatcher()->removeSignalListener($testSig, $newSigHandler);
+
+        $currSigHandler = pcntl_signal_get_handler($testSig);
+        $this->assertNotEquals($origSigHandler, $currSigHandler);
+        $this->assertEquals(3, $sigOrig);
+        $this->assertEquals(2, $sigNew);
+
+        posix_kill(posix_getpid(), $testSig);
+
+        $this->assertEquals(4, $sigOrig);
+        $this->assertEquals(2, $sigNew);
+
+        $this->processManager->addListener($testSig, $newSigHandler);
+
+        $currSigHandler = pcntl_signal_get_handler($testSig);
+        $this->assertNotEquals($origSigHandler, $currSigHandler);
+        $this->assertEquals(4, $sigOrig);
+        $this->assertEquals(2, $sigNew);
+
+        posix_kill(posix_getpid(), $testSig);
+
+        $this->assertEquals(5, $sigOrig);
+        $this->assertEquals(3, $sigNew);
+
+        $this->processManager->getEventDispatcher()->removeSignalHandlerWrappers();
+
+        $this->assertEquals($origSigHandler, pcntl_signal_get_handler($testSig));
+        $this->assertEquals(5, $sigOrig);
+        $this->assertEquals(3, $sigNew);
+
+        posix_kill(posix_getpid(), $testSig);
+
+        $this->assertEquals(6, $sigOrig);
+        $this->assertEquals(3, $sigNew);
     }
 }
