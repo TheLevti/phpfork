@@ -150,7 +150,7 @@ trait SignalEventDispatcherTrait
                 $signo,
                 $error,
                 $strerror
-            ));
+            ), $error);
         }
 
         return $signalHandler;
@@ -186,7 +186,7 @@ trait SignalEventDispatcherTrait
                 $signo,
                 $error,
                 $strerror
-            ));
+            ), $error);
         }
     }
 }

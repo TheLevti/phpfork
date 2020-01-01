@@ -14,8 +14,11 @@ declare(strict_types=1);
 namespace Spork;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionObject;
 use Spork\EventDispatcher\SignalEvent;
 use Spork\EventDispatcher\SignalEventDispatcherInterface;
+use UnexpectedValueException;
 
 class SignalTest extends TestCase
 {
@@ -203,5 +206,35 @@ class SignalTest extends TestCase
 
         $this->assertEquals(6, $sigOrig);
         $this->assertEquals(3, $sigNew);
+    }
+
+    public function testSignalHandlerInstallFailure(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessageRegExp(
+            '/Could not get installed signal handler for signal 255./'
+        );
+        $this->expectExceptionCode(22);
+
+        $this->processManager->addListener(255, function () {
+            // Do nothing.
+        });
+    }
+
+    public function testSignalHandlerInstallErrorHandling(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessageRegExp(
+            '/Could not install signal handler for signal 255./'
+        );
+        $this->expectExceptionCode(22);
+
+        $reflection = new ReflectionObject($this->processManager->getEventDispatcher());
+        $method = $reflection->getMethod('setSignalHandler');
+        $method->setAccessible(true);
+
+        $method->invokeArgs($this->processManager->getEventDispatcher(), [255, function () {
+            // Do nothing.
+        }]);
     }
 }
