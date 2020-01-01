@@ -20,7 +20,7 @@ use UnexpectedValueException;
  * Partial common implementation of the signal related EventDispatcherInterface
  * interface.
  */
-trait EventDispatcherTrait
+trait SignalEventDispatcherTrait
 {
     /**
      * Holds signal handler wrappers to preserve a potentially already existing
@@ -29,6 +29,16 @@ trait EventDispatcherTrait
      * @var array<\Spork\Signal\SignalHandlerWrapper> $sigHandlerWrappers
      */
     private $sigHandlerWrappers = [];
+
+    /**
+     * Remove all installed signal handler wrappers.
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        $this->removeSignalHandlerWrappers();
+    }
 
     /**
      * {@inheritDoc}
@@ -67,6 +77,11 @@ trait EventDispatcherTrait
         $this->removeListener(SignalEvent::getEventName($signo), $listener);
     }
 
+    /**
+     * Removes all signal handlers this class has attached.
+     *
+     * @return void
+     */
     public function removeSignalHandlerWrappers(): void
     {
         foreach ($this->sigHandlerWrappers as $signo => $sigHandlerWrapper) {

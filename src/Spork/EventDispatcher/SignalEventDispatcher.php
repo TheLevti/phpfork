@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace Spork\EventDispatcher;
 
-use Symfony\Component\EventDispatcher\EventDispatcher as BaseClass;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Extends the core event dispatcher with signal handling capabilities. Add and
  * remove signal listeners or dispatch a signal directly.
  */
-class EventDispatcher extends BaseClass implements EventDispatcherInterface
+class SignalEventDispatcher extends EventDispatcher implements
+    SignalEventDispatcherInterface
 {
-    use EventDispatcherTrait;
+    use SignalEventDispatcherTrait;
 }

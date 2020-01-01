@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Spork;
 
 use PHPUnit\Framework\TestCase;
-use Spork\EventDispatcher\EventDispatcher;
 use Spork\EventDispatcher\SignalEvent;
+use Spork\EventDispatcher\SignalEventDispatcherInterface;
 
 class SignalTest extends TestCase
 {
@@ -45,14 +45,11 @@ class SignalTest extends TestCase
         $this->errorReporting = error_reporting(E_ALL & ~E_WARNING);
         $this->async = pcntl_async_signals();
         pcntl_async_signals(true);
-
         $this->processManager = new ProcessManager();
     }
 
     protected function tearDown(): void
     {
-        $this->processManager->getEventDispatcher()->removeSignalHandlerWrappers();
-
         pcntl_async_signals($this->async);
         $this->errorReporting = error_reporting($this->errorReporting);
     }
@@ -66,7 +63,7 @@ class SignalTest extends TestCase
             function (
                 SignalEvent $event,
                 string $eventName,
-                EventDispatcher $dispatcher
+                SignalEventDispatcherInterface $dispatcher
             ) use (&$signaled) {
                 $signaled = true;
 

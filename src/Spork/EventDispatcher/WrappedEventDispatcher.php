@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Spork\EventDispatcher;
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as BaseInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Wraps another event dispatcher, adding signal handling capabilities to it.
  */
-class WrappedEventDispatcher implements EventDispatcherInterface
+class WrappedEventDispatcher implements SignalEventDispatcherInterface
 {
-    use EventDispatcherTrait;
+    use SignalEventDispatcherTrait;
 
     /**
      * The wrapped event dispatcher.
@@ -36,7 +36,7 @@ class WrappedEventDispatcher implements EventDispatcherInterface
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $delegate
      *            The wrapped event dispatcher.
      */
-    public function __construct(BaseInterface $delegate)
+    public function __construct(EventDispatcherInterface $delegate)
     {
         $this->delegate = $delegate;
     }

@@ -13,16 +13,16 @@ declare(strict_types=1);
 
 namespace Spork\EventDispatcher;
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as BaseInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Extends the core event dispatcher interface with signal handling
  * capabilities. Add and remove signal listeners or dispatch a signal directly.
  */
-interface EventDispatcherInterface extends BaseInterface
+interface SignalEventDispatcherInterface extends EventDispatcherInterface
 {
     /**
-     * The signal handler.
+     * Signal handler that dispatches events.
      *
      * @param  int   $signo    The signal being handled.
      * @param  mixed $signinfo If operating systems supports siginfo_t
