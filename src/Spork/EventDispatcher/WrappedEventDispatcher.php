@@ -44,7 +44,7 @@ class WrappedEventDispatcher implements SignalEventDispatcherInterface
     /**
      * {@inheritDoc}
      */
-    public function dispatch($event, string $eventName = null)
+    public function dispatch($event, string $eventName = null): object
     {
         return call_user_func([$this->delegate, 'dispatch'], $event, $eventName);
     }

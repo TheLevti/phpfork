@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Spork;
 
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use ReflectionObject;
 use Spork\EventDispatcher\SignalEvent;
 use Spork\EventDispatcher\SignalEventDispatcherInterface;
