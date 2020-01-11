@@ -31,7 +31,9 @@ class SignalHandlerWrapperTest extends TestCase
         };
 
         $sigHandlerWrapper = new SignalHandlerWrapper($previous, $current);
+        /** @var callable $prev */
         $prev = $sigHandlerWrapper->getPrevious();
+        /** @var callable $curr */
         $curr = $sigHandlerWrapper->getCurrent();
 
         $this->assertEquals(0, $prevCalls);

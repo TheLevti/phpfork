@@ -1,17 +1,21 @@
 <?php
 
 /*
- * This file is part of Spork, an OpenSky project.
+ * This file is part of the thelevti/spork package.
  *
- * (c) OpenSky Project Inc
+ * (c) Petr Levtonov <petr@levtonov.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Spork\Util;
 
-class Error implements \Serializable
+use Serializable;
+
+class Error implements Serializable
 {
     private $class;
     private $message;
@@ -21,7 +25,7 @@ class Error implements \Serializable
 
     public static function fromException(\Exception $e)
     {
-        $flat = new static();
+        $flat = new self();
         $flat->setClass(get_class($e));
         $flat->setMessage($e->getMessage());
         $flat->setFile($e->getFile());

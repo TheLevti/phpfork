@@ -13,6 +13,7 @@ namespace Spork;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class ProcessManagerTest extends TestCase
 {
@@ -74,7 +75,7 @@ class ProcessManagerTest extends TestCase
 
     public function testObjectReturn()
     {
-        $mock = $this->getMockBuilder('Unserializable')->setMethods(['__sleep'])->getMock();
+        $mock = $this->getMockBuilder(stdClass::class)->setMethods(['__sleep'])->getMock();
         $mock->method('__sleep')->willThrowException(new Exception("Hey, don\'t serialize me!"));
 
         $fork = $this->manager->fork(function () use (&$mock) {
