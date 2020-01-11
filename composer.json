@@ -69,6 +69,7 @@
             "/.github",
             "/.gitignore",
             "/.travis.yml",
+            "/coverage",
             "/php_cs.dist",
             "/phpstan.neon.dist",
             "/phpunit.xml.dist",
