@@ -35,7 +35,7 @@
         "rss": "https://github.com/TheLevti/spork/commits/master.atom"
     },
     "require": {
-        "php": ">=7.2.0",
+        "php": "^7.2.0",
         "symfony/event-dispatcher": "^4.0.0 || ^5.0.0"
     },
     "require-dev": {
@@ -43,6 +43,7 @@
         "ext-posix": "*",
         "ext-shmop": "*",
         "friendsofphp/php-cs-fixer": "^2.16",
+        "phan/phan": "^2.4",
         "phpstan/phpstan": "^0.12.4",
         "phpunit/phpunit": "^8.5",
         "squizlabs/php_codesniffer": "^3.5",
@@ -78,5 +79,12 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "scripts": {
+        "cs": "vendor/bin/phpcs --standard=PSR12 src/ tests/",
+        "csf": "vendor/bin/php-cs-fixer fix",
+        "static": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/phpunit",
+        "coverage": "vendor/bin/phpunit --coverage-html coverage"
     }
 }

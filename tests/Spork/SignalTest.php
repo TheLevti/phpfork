@@ -16,7 +16,7 @@ namespace Spork;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 use Spork\EventDispatcher\SignalEvent;
-use Spork\EventDispatcher\SignalEventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use UnexpectedValueException;
 
 class SignalTest extends TestCase
@@ -44,6 +44,8 @@ class SignalTest extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->errorReporting = error_reporting(E_ALL & ~E_WARNING);
         $this->async = pcntl_async_signals();
         pcntl_async_signals(true);
@@ -52,8 +54,12 @@ class SignalTest extends TestCase
 
     protected function tearDown(): void
     {
+        $this->processManager->getEventDispatcher()->removeSignalHandlerWrappers();
+
         pcntl_async_signals($this->async);
         $this->errorReporting = error_reporting($this->errorReporting);
+
+        parent::tearDown();
     }
 
     public function testSingleListenerOneSignal()
@@ -65,7 +71,7 @@ class SignalTest extends TestCase
             function (
                 SignalEvent $event,
                 string $eventName,
-                SignalEventDispatcherInterface $dispatcher
+                EventDispatcher $dispatcher
             ) use (&$signaled) {
                 $signaled = true;
 

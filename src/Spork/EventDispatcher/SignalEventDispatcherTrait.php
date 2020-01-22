@@ -26,7 +26,7 @@ trait SignalEventDispatcherTrait
      * Holds signal handler wrappers to preserve a potentially already existing
      * signal handler.
      *
-     * @var array<\Spork\Signal\SignalHandlerWrapper> $sigHandlerWrappers
+     * @var array<int,\Spork\Signal\SignalHandlerWrapper> $sigHandlerWrappers
      */
     private $sigHandlerWrappers = [];
 
@@ -149,7 +149,7 @@ trait SignalEventDispatcherTrait
                 'Could not get installed signal handler for signal %d. %d: %s',
                 $signo,
                 $error,
-                $strerror
+                (string)$strerror
             ), $error);
         }
 
@@ -185,7 +185,7 @@ trait SignalEventDispatcherTrait
                 'Could not install signal handler for signal %d. %d: %s',
                 $signo,
                 $error,
-                $strerror
+                (string)$strerror
             ), $error);
         }
     }
