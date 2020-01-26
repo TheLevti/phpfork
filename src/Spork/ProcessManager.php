@@ -58,15 +58,6 @@ class ProcessManager
         return $this->dispatcher;
     }
 
-    public function addListener($eventName, $listener, $priority = 0)
-    {
-        if (is_integer($eventName)) {
-            $this->dispatcher->addSignalListener($eventName, $listener, $priority);
-        } else {
-            $this->dispatcher->addListener($eventName, $listener, $priority);
-        }
-    }
-
     public function setDebug($debug)
     {
         $this->debug = $debug;

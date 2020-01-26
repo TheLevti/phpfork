@@ -27,7 +27,7 @@ trait SignalEventDispatcherTestTrait
     {
         $signaled = false;
 
-        $this->processManager->addListener(
+        $this->processManager->getEventDispatcher()->addSignalListener(
             SIGUSR1,
             function (
                 SignalEvent $event,
@@ -55,7 +55,10 @@ trait SignalEventDispatcherTestTrait
                     $this->assertIsInt($signinfo['uid']);
                 }
 
-                $this->assertEquals(SignalEvent::getEventName(SIGUSR1), $eventName);
+                $this->assertEquals(
+                    SignalEvent::getEventName(SIGUSR1),
+                    $eventName
+                );
                 $this->assertTrue($dispatcher instanceof EventDispatcher);
             }
         );
@@ -74,13 +77,19 @@ trait SignalEventDispatcherTestTrait
         $sigFirst = false;
         $sigSecond = false;
 
-        $this->processManager->addListener(SIGUSR1, function () use (&$sigFirst) {
-            $sigFirst = true;
-        });
+        $this->processManager->getEventDispatcher()->addSignalListener(
+            SIGUSR1,
+            function () use (&$sigFirst) {
+                $sigFirst = true;
+            }
+        );
 
-        $this->processManager->addListener(SIGUSR1, function () use (&$sigSecond) {
-            $sigSecond = true;
-        });
+        $this->processManager->getEventDispatcher()->addSignalListener(
+            SIGUSR1,
+            function () use (&$sigSecond) {
+                $sigSecond = true;
+            }
+        );
 
         $this->processManager->fork(function (SharedMemory $sharedMem) {
             $sharedMem->signal(SIGUSR1);
@@ -108,7 +117,10 @@ trait SignalEventDispatcherTestTrait
 
         pcntl_signal($testSig, $origSigHandler);
 
-        $this->assertEquals($origSigHandler, pcntl_signal_get_handler($testSig));
+        $this->assertEquals(
+            $origSigHandler,
+            pcntl_signal_get_handler($testSig)
+        );
         $this->assertEquals(0, $sigOrig);
         $this->assertEquals(0, $sigNew);
 
@@ -117,16 +129,21 @@ trait SignalEventDispatcherTestTrait
         $this->assertEquals(1, $sigOrig);
         $this->assertEquals(0, $sigNew);
 
-        $this->processManager->addListener($testSig, $newSigHandler);
+        $this->processManager->getEventDispatcher()->addSignalListener(
+            $testSig,
+            $newSigHandler
+        );
 
         $currSigHandler = pcntl_signal_get_handler($testSig);
         $this->assertNotEquals($origSigHandler, $currSigHandler);
         $this->assertEquals(1, $sigOrig);
         $this->assertEquals(0, $sigNew);
 
-        $this->processManager->fork(function (SharedMemory $sharedMem) use (&$testSig) {
-            $sharedMem->signal($testSig);
-        });
+        $this->processManager->fork(
+            function (SharedMemory $sharedMem) use (&$testSig) {
+                $sharedMem->signal($testSig);
+            }
+        );
 
         $this->processManager->wait();
 
@@ -138,7 +155,10 @@ trait SignalEventDispatcherTestTrait
         $this->assertEquals(3, $sigOrig);
         $this->assertEquals(2, $sigNew);
 
-        $this->processManager->getEventDispatcher()->removeSignalListener($testSig, $newSigHandler);
+        $this->processManager->getEventDispatcher()->removeSignalListener(
+            $testSig,
+            $newSigHandler
+        );
 
         $currSigHandler = pcntl_signal_get_handler($testSig);
         $this->assertNotEquals($origSigHandler, $currSigHandler);
@@ -150,7 +170,10 @@ trait SignalEventDispatcherTestTrait
         $this->assertEquals(4, $sigOrig);
         $this->assertEquals(2, $sigNew);
 
-        $this->processManager->addListener($testSig, $newSigHandler);
+        $this->processManager->getEventDispatcher()->addSignalListener(
+            $testSig,
+            $newSigHandler
+        );
 
         $currSigHandler = pcntl_signal_get_handler($testSig);
         $this->assertNotEquals($origSigHandler, $currSigHandler);
@@ -162,9 +185,15 @@ trait SignalEventDispatcherTestTrait
         $this->assertEquals(5, $sigOrig);
         $this->assertEquals(3, $sigNew);
 
-        $this->processManager->getEventDispatcher()->removeSignalHandlerWrappers();
+        $this->processManager
+            ->getEventDispatcher()
+            ->removeSignalHandlerWrappers()
+        ;
 
-        $this->assertEquals($origSigHandler, pcntl_signal_get_handler($testSig));
+        $this->assertEquals(
+            $origSigHandler,
+            pcntl_signal_get_handler($testSig)
+        );
         $this->assertEquals(5, $sigOrig);
         $this->assertEquals(3, $sigNew);
 
@@ -182,9 +211,12 @@ trait SignalEventDispatcherTestTrait
         );
         $this->expectExceptionCode(22);
 
-        $this->processManager->addListener(255, function () {
-            // Do nothing.
-        });
+        $this->processManager->getEventDispatcher()->addSignalListener(
+            255,
+            function () {
+                // Do nothing.
+            }
+        );
     }
 
     public function testSignalHandlerInstallErrorHandling(): void
@@ -195,12 +227,17 @@ trait SignalEventDispatcherTestTrait
         );
         $this->expectExceptionCode(22);
 
-        $reflection = new ReflectionObject($this->processManager->getEventDispatcher());
+        $reflection = new ReflectionObject(
+            $this->processManager->getEventDispatcher()
+        );
         $method = $reflection->getMethod('setSignalHandler');
         $method->setAccessible(true);
 
-        $method->invokeArgs($this->processManager->getEventDispatcher(), [255, function () {
-            // Do nothing.
-        }]);
+        $method->invokeArgs(
+            $this->processManager->getEventDispatcher(),
+            [255, function () {
+                // Do nothing.
+            }]
+        );
     }
 }
