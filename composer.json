@@ -81,6 +81,13 @@
         "sort-packages": true
     },
     "scripts": {
+        "all": [
+            "composer cs",
+            "composer csf",
+            "composer static",
+            "composer test",
+            "composer coverage"
+        ],
         "cs": "vendor/bin/phpcs --standard=PSR12 src/ tests/",
         "csf": "vendor/bin/php-cs-fixer fix",
         "static": "vendor/bin/phpstan analyse",
