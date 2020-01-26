@@ -13,9 +13,9 @@ namespace Spork;
 
 use InvalidArgumentException;
 use Spork\Batch\Strategy\StrategyInterface;
-use Spork\EventDispatcher\EventDispatcher;
-use Spork\EventDispatcher\EventDispatcherInterface;
 use Spork\EventDispatcher\Events;
+use Spork\EventDispatcher\SignalEventDispatcher;
+use Spork\EventDispatcher\SignalEventDispatcherInterface;
 use Spork\Exception\ProcessControlException;
 use Spork\Exception\UnexpectedTypeException;
 use Spork\Util\Error;
@@ -34,9 +34,12 @@ class ProcessManager
     /** @var Fork[] */
     private $forks;
 
-    public function __construct(EventDispatcherInterface $dispatcher = null, Factory $factory = null, $debug = false)
-    {
-        $this->dispatcher = $dispatcher ?: new EventDispatcher();
+    public function __construct(
+        SignalEventDispatcherInterface $dispatcher = null,
+        Factory $factory = null,
+        $debug = false
+    ) {
+        $this->dispatcher = $dispatcher ?: new SignalEventDispatcher();
         $this->factory = $factory ?: new Factory();
         $this->debug = $debug;
         $this->zombieOkay = false;
@@ -53,15 +56,6 @@ class ProcessManager
     public function getEventDispatcher()
     {
         return $this->dispatcher;
-    }
-
-    public function addListener($eventName, $listener, $priority = 0)
-    {
-        if (is_integer($eventName)) {
-            $this->dispatcher->addSignalListener($eventName, $listener, $priority);
-        } else {
-            $this->dispatcher->addListener($eventName, $listener, $priority);
-        }
     }
 
     public function setDebug($debug)
@@ -109,7 +103,7 @@ class ProcessManager
             $message = new ExitMessage();
 
             // phone home on shutdown
-            register_shutdown_function(function () use ($shm, $message) {
+            register_shutdown_function(function () use ($shm, $message): void {
                 $status = null;
 
                 try {
