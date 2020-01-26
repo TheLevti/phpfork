@@ -11,57 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Spork;
+namespace Spork\EventDispatcher;
 
-use PHPUnit\Framework\TestCase;
 use ReflectionObject;
-use Spork\EventDispatcher\SignalEvent;
+use Spork\SharedMemory;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use UnexpectedValueException;
 
-class SignalTest extends TestCase
+/**
+ * Common tests for signal event dispatchers.
+ */
+trait SignalEventDispatcherTestTrait
 {
-    /**
-     * Process manager instance.
-     *
-     * @var \Spork\ProcessManager $processManager
-     */
-    private $processManager;
-
-    /**
-     * Holds the previous pcntl async signals value.
-     *
-     * @var bool $async
-     */
-    private $async;
-
-    /**
-     * Holds the previous error reporting configuration.
-     *
-     * @var int $errorReporting
-     */
-    private $errorReporting;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->errorReporting = error_reporting(E_ALL & ~E_WARNING);
-        $this->async = pcntl_async_signals();
-        pcntl_async_signals(true);
-        $this->processManager = new ProcessManager();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->processManager->getEventDispatcher()->removeSignalHandlerWrappers();
-
-        pcntl_async_signals($this->async);
-        $this->errorReporting = error_reporting($this->errorReporting);
-
-        parent::tearDown();
-    }
-
     public function testSingleListenerOneSignal()
     {
         $signaled = false;
@@ -95,7 +56,7 @@ class SignalTest extends TestCase
                 }
 
                 $this->assertEquals(SignalEvent::getEventName(SIGUSR1), $eventName);
-                $this->assertEquals($this->processManager->getEventDispatcher(), $dispatcher);
+                $this->assertTrue($dispatcher instanceof EventDispatcher);
             }
         );
 
