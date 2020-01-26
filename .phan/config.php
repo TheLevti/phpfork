@@ -385,6 +385,7 @@ return [
     'directory_list' => [
         'src/Spork',
         'vendor/symfony/event-dispatcher',
+        'vendor/symfony/event-dispatcher-contracts',
         'vendor/symfony/var-dumper',
     ],
 
