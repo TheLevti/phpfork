@@ -1,13 +1,15 @@
 <?php
 
 /*
- * This file is part of Spork, an OpenSky project.
+ * This file is part of the thelevti/spork package.
  *
- * (c) OpenSky Project Inc
+ * (c) Petr Levtonov <petr@levtonov.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+declare(strict_types=1);
 
 namespace Spork;
 
@@ -95,6 +97,7 @@ class ProcessManager
         }
 
         if (0 === $pid) {
+            $currPid = posix_getpid();
             // reset the list of child processes
             $this->forks = [];
 
@@ -103,8 +106,11 @@ class ProcessManager
             $message = new ExitMessage();
 
             // phone home on shutdown
-            register_shutdown_function(function () use ($shm, $message): void {
-                $status = null;
+            register_shutdown_function(function () use ($currPid, $shm, $message): void {
+                // Do not execute this function in child processes.
+                if ($currPid !== posix_getpid()) {
+                    return;
+                }
 
                 try {
                     $shm->send($message, false);
