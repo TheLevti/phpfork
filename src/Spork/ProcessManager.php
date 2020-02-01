@@ -1,21 +1,23 @@
 <?php
 
 /*
- * This file is part of Spork, an OpenSky project.
+ * This file is part of the thelevti/spork package.
  *
- * (c) OpenSky Project Inc
+ * (c) Petr Levtonov <petr@levtonov.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Spork;
 
 use InvalidArgumentException;
 use Spork\Batch\Strategy\StrategyInterface;
-use Spork\EventDispatcher\EventDispatcher;
-use Spork\EventDispatcher\EventDispatcherInterface;
 use Spork\EventDispatcher\Events;
+use Spork\EventDispatcher\SignalEventDispatcher;
+use Spork\EventDispatcher\SignalEventDispatcherInterface;
 use Spork\Exception\ProcessControlException;
 use Spork\Exception\UnexpectedTypeException;
 use Spork\Util\Error;
@@ -34,9 +36,12 @@ class ProcessManager
     /** @var Fork[] */
     private $forks;
 
-    public function __construct(EventDispatcherInterface $dispatcher = null, Factory $factory = null, $debug = false)
-    {
-        $this->dispatcher = $dispatcher ?: new EventDispatcher();
+    public function __construct(
+        SignalEventDispatcherInterface $dispatcher = null,
+        Factory $factory = null,
+        $debug = false
+    ) {
+        $this->dispatcher = $dispatcher ?: new SignalEventDispatcher();
         $this->factory = $factory ?: new Factory();
         $this->debug = $debug;
         $this->zombieOkay = false;
@@ -53,15 +58,6 @@ class ProcessManager
     public function getEventDispatcher()
     {
         return $this->dispatcher;
-    }
-
-    public function addListener($eventName, $listener, $priority = 0)
-    {
-        if (is_integer($eventName)) {
-            $this->dispatcher->addSignalListener($eventName, $listener, $priority);
-        } else {
-            $this->dispatcher->addListener($eventName, $listener, $priority);
-        }
     }
 
     public function setDebug($debug)
@@ -101,6 +97,7 @@ class ProcessManager
         }
 
         if (0 === $pid) {
+            $currPid = posix_getpid();
             // reset the list of child processes
             $this->forks = [];
 
@@ -109,8 +106,11 @@ class ProcessManager
             $message = new ExitMessage();
 
             // phone home on shutdown
-            register_shutdown_function(function () use ($shm, $message) {
-                $status = null;
+            register_shutdown_function(function () use ($currPid, $shm, $message): void {
+                // Do not execute this function in child processes.
+                if ($currPid !== posix_getpid()) {
+                    return;
+                }
 
                 try {
                     $shm->send($message, false);

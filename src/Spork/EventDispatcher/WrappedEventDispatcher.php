@@ -1,82 +1,105 @@
 <?php
 
 /*
- * This file is part of Spork, an OpenSky project.
+ * This file is part of the thelevti/spork package.
  *
- * (c) OpenSky Project Inc
+ * (c) Petr Levtonov <petr@levtonov.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-declare(ticks=1);
+declare(strict_types=1);
 
 namespace Spork\EventDispatcher;
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as BaseInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
-class WrappedEventDispatcher implements EventDispatcherInterface
+/**
+ * Wraps another event dispatcher, adding signal handling capabilities to it.
+ */
+class WrappedEventDispatcher implements SignalEventDispatcherInterface
 {
+    use SignalEventDispatcherTrait;
+
+    /**
+     * The wrapped event dispatcher.
+     *
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $delegate
+     */
     private $delegate;
 
-    public function __construct(BaseInterface $delegate)
+    /**
+     * Constructs a new instance of the WrappedEventDispatcher class.
+     *
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $delegate
+     *            The wrapped event dispatcher.
+     */
+    public function __construct(EventDispatcherInterface $delegate)
     {
         $this->delegate = $delegate;
     }
 
-    public function dispatchSignal($signal)
+    /**
+     * {@inheritDoc}
+     */
+    public function dispatch($event, string $eventName = null): object
     {
-        $this->dispatch(new Event(), 'spork.signal.' . $signal);
+        return call_user_func([$this->delegate, 'dispatch'], $event, $eventName);
     }
 
-    public function addSignalListener($signal, $callable, $priority = 0)
-    {
-        $this->delegate->addListener('spork.signal.' . $signal, $callable, $priority);
-        pcntl_signal($signal, [$this, 'dispatchSignal']);
-    }
-
-    public function removeSignalListener($signal, $callable)
-    {
-        $this->delegate->removeListener('spork.signal.' . $signal, $callable);
-    }
-
-    public function dispatch($event, string $eventName = null)
-    {
-        return call_user_func([$this->delegate, 'dispatch'], ...func_get_args());
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function addListener($eventName, $listener, $priority = 0)
     {
-        $this->delegate->addListener($eventName, $listener, $priority);
+        return $this->delegate->addListener($eventName, $listener, $priority);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function addSubscriber(EventSubscriberInterface $subscriber)
     {
-        $this->delegate->addSubscriber($subscriber);
+        return $this->delegate->addSubscriber($subscriber);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function removeListener($eventName, $listener)
     {
-        $this->delegate->removeListener($eventName, $listener);
+        return $this->delegate->removeListener($eventName, $listener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function removeSubscriber(EventSubscriberInterface $subscriber)
     {
-        $this->delegate->removeSubscriber($subscriber);
+        return $this->delegate->removeSubscriber($subscriber);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getListeners($eventName = null)
     {
         return $this->delegate->getListeners($eventName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getListenerPriority($eventName, $listener)
     {
         return $this->delegate->getListenerPriority($eventName, $listener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function hasListeners($eventName = null)
     {
         return $this->delegate->hasListeners($eventName);

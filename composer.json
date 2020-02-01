@@ -35,17 +35,19 @@
         "rss": "https://github.com/TheLevti/spork/commits/master.atom"
     },
     "require": {
-        "php": ">=7.2.0",
-        "symfony/event-dispatcher": ">=3.0.0"
+        "php": "^7.2.0",
+        "symfony/event-dispatcher": "^4.0.0 || ^5.0.0"
     },
     "require-dev": {
         "ext-pcntl": "*",
         "ext-posix": "*",
         "ext-shmop": "*",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "phpstan/phpstan": "^0.11.19",
-        "phpunit/phpunit": "^8.4",
-        "squizlabs/php_codesniffer": "^3.5"
+        "phan/phan": "^2.4",
+        "phpstan/phpstan": "^0.12.4",
+        "phpunit/phpunit": "^8.5",
+        "squizlabs/php_codesniffer": "^3.5",
+        "symfony/var-dumper": "^5.0"
     },
     "autoload": {
         "psr-4": {
@@ -68,6 +70,7 @@
             "/.github",
             "/.gitignore",
             "/.travis.yml",
+            "/coverage",
             "/php_cs.dist",
             "/phpstan.neon.dist",
             "/phpunit.xml.dist",
@@ -76,5 +79,19 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "scripts": {
+        "all": [
+            "composer cs",
+            "composer csf",
+            "composer static",
+            "composer test",
+            "composer coverage"
+        ],
+        "cs": "vendor/bin/phpcs --standard=PSR12 src/ tests/",
+        "csf": "vendor/bin/php-cs-fixer fix",
+        "static": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/phpunit",
+        "coverage": "vendor/bin/phpunit --coverage-html coverage"
     }
 }
