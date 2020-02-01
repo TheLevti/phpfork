@@ -49,6 +49,21 @@ class SharedMemory
     }
 
     /**
+     * Clean up shared memory when not needed any longer.
+     *
+     * @return void
+     */
+    public function cleanup(): void
+    {
+        if (false === ($shmId = @shmop_open($this->pid, 'a', 0, 0))) {
+            return;
+        }
+
+        shmop_delete($shmId);
+        shmop_close($shmId);
+    }
+
+    /**
      * Reads all messages from shared memory.
      *
      * @return mixed Any data that has been serialized into the shared memory.
@@ -62,18 +77,21 @@ class SharedMemory
         /** @var string|false $sharedMemory */
         $sharedMemory = shmop_read($shmId, 0, 0);
         if (false === $sharedMemory) {
+            shmop_close($shmId);
+
             throw new ProcessControlException(sprintf(
                 'Not able to read from shared memory segment for PID: %d',
                 $this->pid
             ));
-        }
+        } elseif (false === shmop_delete($shmId)) {
+            shmop_close($shmId);
 
-        if (false === shmop_delete($shmId)) {
             throw new ProcessControlException(sprintf(
                 'Not able to delete shared memory segment for PID: %d',
                 $this->pid
             ));
         }
+
         shmop_close($shmId);
 
         return unserialize($this->strFromMem($sharedMemory));
@@ -103,18 +121,21 @@ class SharedMemory
         $termMsgsLen = strlen($terminatedMsgs);
 
         // Write new serialized message to shared memory
-        $shmId = shmop_open($this->pid, 'c', 0644, $termMsgsLen);
-        if (!is_resource($shmId)) {
+        if (false === ($shmId = @shmop_open($this->pid, 'c', 0644, $termMsgsLen))) {
             throw new ProcessControlException(sprintf(
                 'Not able to create shared memory segment for PID: %d',
                 $this->pid
             ));
         } elseif (shmop_write($shmId, $terminatedMsgs, 0) !== $termMsgsLen) {
+            shmop_close($shmId);
+
             throw new ProcessControlException(sprintf(
                 'Not able to write to shared memory segment for PID: %d.',
                 $this->pid
             ));
         }
+
+        shmop_close($shmId);
 
         if (false === $signal) {
             return;
