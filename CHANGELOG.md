@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2019-11-29
+
+### Changed
+
+- #5: Preserve and restore previous signal handler. Refactored event dispatcher.
+
+### Removed
+
+- #5: Removed the method `addListener` from the `ProcessManager` class. Add
+  signal/normal listeners through the event dispatcher on the process manager.
+
+### Fixed
+
+- #7: Fixed missing null terminator handling on shared memory blocks.
+- #8: Fixed parent's shutdown function being executed in child processes.
+
 ## [1.0.0] - 2019-11-29
 
 ### Added
@@ -38,5 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added serializable objects for exit and error messages.
 
 [Unreleased]: https://github.com/TheLevti/spork/compare/0.3.0...HEAD
+[2.0.0]: https://github.com/TheLevti/spork/releases/2.0.0
 [1.0.0]: https://github.com/TheLevti/spork/releases/1.0.0
 [0.3.0]: https://github.com/TheLevti/spork/releases/0.3.0
