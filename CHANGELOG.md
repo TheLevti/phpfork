@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2020-02-02
+
 # Fixed
 
 - #10: Properly detach from and cleanup shared memory.
 
-## [2.0.0] - 2019-11-29
+## [2.0.0] - 2020-02-01
 
 ### Changed
 
@@ -57,7 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added progress callbacks to Deferred.
 - Added serializable objects for exit and error messages.
 
-[Unreleased]: https://github.com/TheLevti/spork/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/TheLevti/spork/compare/2.0.1...HEAD
+[2.0.1]: https://github.com/TheLevti/spork/releases/2.0.1
 [2.0.0]: https://github.com/TheLevti/spork/releases/2.0.0
 [1.0.0]: https://github.com/TheLevti/spork/releases/1.0.0
 [0.3.0]: https://github.com/TheLevti/spork/releases/0.3.0
