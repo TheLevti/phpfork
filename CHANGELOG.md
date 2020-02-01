@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+# Fixed
+
+- #10: Properly detach from and cleanup shared memory.
+
 ## [2.0.0] - 2019-11-29
 
 ### Changed

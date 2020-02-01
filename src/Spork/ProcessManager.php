@@ -53,6 +53,10 @@ class ProcessManager
         if (!$this->zombieOkay) {
             $this->wait();
         }
+
+        foreach ($this->forks as $fork) {
+            $fork->cleanupSharedMemory();
+        }
     }
 
     public function getEventDispatcher()
@@ -97,7 +101,6 @@ class ProcessManager
         }
 
         if (0 === $pid) {
-            $currPid = posix_getpid();
             // reset the list of child processes
             $this->forks = [];
 
@@ -106,6 +109,7 @@ class ProcessManager
             $message = new ExitMessage();
 
             // phone home on shutdown
+            $currPid = posix_getpid();
             register_shutdown_function(function () use ($currPid, $shm, $message): void {
                 // Do not execute this function in child processes.
                 if ($currPid !== posix_getpid()) {
