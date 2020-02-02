@@ -2,13 +2,13 @@
 **[Installation](#installation)** |
 **[Usage](#usage)**
 
-# thelevti/spork
+# thelevti/phpfork
 
-[![Build Status](https://travis-ci.com/TheLevti/spork.svg?branch=master)](https://travis-ci.com/TheLevti/spork)
+[![Build Status](https://travis-ci.com/TheLevti/phpfork.svg?branch=master)](https://travis-ci.com/TheLevti/phpfork)
 
 PHP on a fork.
 
-`thelevti/spork` follows semantic versioning. Read more on [semver.org][1].
+`thelevti/phpfork` follows semantic versioning. Read more on [semver.org][1].
 
 ----
 
@@ -29,21 +29,21 @@ To use this library through [composer][5], run the following terminal command
 inside your repository's root folder.
 
 ```sh
-composer require "thelevti/spork"
+composer require "thelevti/phpfork"
 ```
 
 ## Usage
 
-This library uses the namespace `Spork`.
+This library uses the namespace `Phpfork`.
 
 ```php
 <?php
 
-$manager = new Spork\ProcessManager();
+$manager = new Phpfork\ProcessManager();
 $manager->fork(function () {
     // do something in another process!
     return 'Hello from ' . getmypid();
-})->then(function (Spork\Fork $fork) {
+})->then(function (Phpfork\Fork $fork) {
     // do something in the parent process when it's done!
     echo "{$fork->getPid()} says '{$fork->getResult()}'\n";
 });
@@ -60,7 +60,7 @@ multiple batches and spread them across many processes.
 $files = new RecursiveDirectoryIterator('/path/to/images');
 $files = new RecursiveIteratorIterator($files);
 
-$manager = new Spork\ProcessManager();
+$manager = new Phpfork\ProcessManager();
 $manager->process($files, function(SplFileInfo $file) {
     // upload this file
 });
@@ -114,15 +114,15 @@ $callback = function ($value) use ($params) {
 $parentConnection = Doctrine\DBAL\DriverManager::getConnection($params);
 $parentConnection->connect();
 
-$dispatcher = new Spork\EventDispatcher\EventDispatcher();
-$dispatcher->addListener(Spork\EventDispatcher\Events::PRE_FORK, function () use ($parentConnection) {
+$dispatcher = new Phpfork\EventDispatcher\EventDispatcher();
+$dispatcher->addListener(Phpfork\EventDispatcher\Events::PRE_FORK, function () use ($parentConnection) {
     $parentConnection->close();
 });
 
-$manager = new Spork\ProcessManager($dispatcher, null, true);
+$manager = new Phpfork\ProcessManager($dispatcher, null, true);
 
-/** @var Spork\Fork $fork */
-$fork = $manager->process($dataArray, $callback, new Spork\Batch\Strategy\ChunkStrategy($forks));
+/** @var Phpfork\Fork $fork */
+$fork = $manager->process($dataArray, $callback, new Phpfork\Batch\Strategy\ChunkStrategy($forks));
 $manager->wait();
 
 $result = $fork->getResult();
