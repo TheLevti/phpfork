@@ -48,14 +48,15 @@ class ProcessManager
         $this->forks = [];
     }
 
+    /**
+     * Does cleanup when the process manager is destroyed.
+     *
+     * @return void
+     */
     public function __destruct()
     {
         if (!$this->zombieOkay) {
             $this->wait();
-        }
-
-        foreach ($this->forks as $fork) {
-            $fork->cleanupSharedMemory();
         }
     }
 
