@@ -383,7 +383,7 @@ return [
     // Thus, both first-party and third-party code being used by
     // your application should be included in this list.
     'directory_list' => [
-        'src/Spork',
+        'src',
         'vendor/symfony/event-dispatcher',
         'vendor/symfony/event-dispatcher-contracts',
         'vendor/symfony/var-dumper',

@@ -1,6 +1,6 @@
 {
-    "name": "thelevti/spork",
-    "description": "PHP on a fork.",
+    "name": "thelevti/phpfork",
+    "description": "PHP process forking library.",
     "type": "library",
     "keywords": [
         "php",
@@ -9,7 +9,7 @@
         "async",
         "shmop"
     ],
-    "homepage": "https://github.com/TheLevti/spork",
+    "homepage": "https://github.com/TheLevti/phpfork",
     "readme": "README.md",
     "license": "MIT",
     "authors": [
@@ -28,11 +28,11 @@
     ],
     "support": {
         "email": "petr@levtonov.com",
-        "issues": "https://github.com/TheLevti/spork/issues",
-        "wiki": "https://github.com/TheLevti/spork/wiki",
-        "source": "https://github.com/TheLevti/spork",
-        "docs": "https://github.com/TheLevti/spork/blob/master/README.md",
-        "rss": "https://github.com/TheLevti/spork/commits/master.atom"
+        "issues": "https://github.com/TheLevti/phpfork/issues",
+        "wiki": "https://github.com/TheLevti/phpfork/wiki",
+        "source": "https://github.com/TheLevti/phpfork",
+        "docs": "https://github.com/TheLevti/phpfork/blob/master/README.md",
+        "rss": "https://github.com/TheLevti/phpfork/commits/master.atom"
     },
     "require": {
         "php": "^7.2.0",
@@ -51,18 +51,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Spork\\": "src/Spork/"
+            "Phpfork\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Spork\\": "tests/Spork/"
+            "Phpfork\\": "tests/"
         }
     },
     "suggest": {
         "ext-pnctl": "To allow this library forking processes.",
         "ext-posix": "To allow this library getting process information.",
-        "ext-shmop": "To allow this library doing interprocess communication."
+        "ext-shmop": "To allow this library doing inter-process communication."
     },
     "archive": {
         "exclude": [
