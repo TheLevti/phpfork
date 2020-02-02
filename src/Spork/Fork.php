@@ -37,16 +37,6 @@ class Fork implements DeferredInterface
     }
 
     /**
-     * Clean up shared memory when not needed any longer.
-     *
-     * @return void
-     */
-    public function cleanupSharedMemory(): void
-    {
-        $this->shm->cleanup();
-    }
-
-    /**
      * Assign a name to the current fork (useful for debugging).
      */
     public function setName($name)
@@ -91,6 +81,8 @@ class Fork implements DeferredInterface
 
         if ($this->isExited()) {
             $this->receive();
+
+            $this->shm->cleanup();
 
             $this->isSuccessful() ? $this->resolve() : $this->reject();
 
