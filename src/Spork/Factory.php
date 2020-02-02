@@ -1,13 +1,15 @@
 <?php
 
 /*
- * This file is part of Spork, an OpenSky project.
+ * This file is part of the thelevti/spork package.
  *
- * (c) OpenSky Project Inc
+ * (c) Petr Levtonov <petr@levtonov.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+declare(strict_types=1);
 
 namespace Spork;
 
@@ -33,12 +35,12 @@ class Factory
     /**
      * Creates a new shared memory instance.
      *
-     * @param integer $pid    The child process id or null if this is the child
-     * @param integer $signal The signal to send after writing to shared memory
+     * @param int|null $pid    The child process id or null if this is the child.
+     * @param int|null $signal The signal to send after writing to shared memory.
      *
-     * @return SharedMemory A new shared memory instance
+     * @return \Spork\SharedMemory A new shared memory instance.
      */
-    public function createSharedMemory($pid = null, $signal = null)
+    public function createSharedMemory(?int $pid = null, ?int $signal = null): SharedMemory
     {
         return new SharedMemory($pid, $signal);
     }

@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Spork;
 
+use Exception;
 use InvalidArgumentException;
 use Spork\Batch\Strategy\StrategyInterface;
 use Spork\EventDispatcher\Events;
 use Spork\EventDispatcher\SignalEventDispatcher;
 use Spork\EventDispatcher\SignalEventDispatcherInterface;
 use Spork\Exception\ProcessControlException;
-use Spork\Exception\UnexpectedTypeException;
 use Spork\Util\Error;
 use Spork\Util\ExitMessage;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -33,7 +33,7 @@ class ProcessManager
     private $zombieOkay;
     private $signal;
 
-    /** @var Fork[] */
+    /** @var array<int,\Spork\Fork> $forks */
     private $forks;
 
     public function __construct(
@@ -87,51 +87,29 @@ class ProcessManager
 
     /**
      * Forks something into another process and returns a deferred object.
+     *
+     * @param callable $callable Code to execute in a fork.
+     * @return \Spork\Fork Newly created fork.
      */
-    public function fork($callable)
+    public function fork(callable $callable): Fork
     {
-        if (!is_callable($callable)) {
-            throw new UnexpectedTypeException($callable, 'callable');
-        }
-
         // allow the system to cleanup before forking
         call_user_func([$this->dispatcher, 'dispatch'], new Event(), Events::PRE_FORK);
 
-        if (-1 === $pid = pcntl_fork()) {
-            throw new ProcessControlException('Unable to fork a new process');
+        if (-1 === ($pid = pcntl_fork())) {
+            throw new ProcessControlException('Unable to fork a new process.');
         }
 
         if (0 === $pid) {
             // reset the list of child processes
             $this->forks = [];
 
-            // setup the shared memory
-            $shm = $this->factory->createSharedMemory(null, $this->signal);
-            $message = new ExitMessage();
-
-            // phone home on shutdown
-            $currPid = posix_getpid();
-            register_shutdown_function(function () use ($currPid, $shm, $message): void {
-                // Do not execute this function in child processes.
-                if ($currPid !== posix_getpid()) {
-                    return;
-                }
-
-                try {
-                    $shm->send($message, false);
-                } catch (\Exception $e) {
-                    // probably an error serializing the result
-                    $message->setResult(null);
-                    $message->setError(Error::fromException($e));
-
-                    $shm->send($message, false);
-
-                    exit(2);
-                }
-            });
-
             // dispatch an event so the system knows it's in a new process
             call_user_func([$this->dispatcher, 'dispatch'], new Event(), Events::POST_FORK);
+
+            // setup the shared memory and exit message.
+            $shm = $this->factory->createSharedMemory(null, $this->signal);
+            $message = new ExitMessage();
 
             if (!$this->debug) {
                 ob_start();
@@ -139,11 +117,10 @@ class ProcessManager
 
             try {
                 $result = call_user_func($callable, $shm);
-
                 $message->setResult($result);
                 $status = is_integer($result) ? $result : 0;
-            } catch (\Exception $e) {
-                $message->setError(Error::fromException($e));
+            } catch (Exception $exception) {
+                $message->setError(Error::fromException($exception));
                 $status = 1;
             }
 
@@ -151,13 +128,26 @@ class ProcessManager
                 $message->setOutput(ob_get_clean());
             }
 
+            try {
+                $shm->send($message, false);
+            } catch (Exception $exception) {
+                // probably an error serializing the result
+                $message->setResult(null);
+                $message->setError(Error::fromException($exception));
+
+                $shm->send($message, false);
+
+                $status = 2;
+            }
+
             exit($status);
         }
 
-        // connect to shared memory
-        $shm = $this->factory->createSharedMemory($pid);
-
-        return $this->forks[$pid] = $this->factory->createFork($pid, $shm, $this->debug);
+        return $this->forks[$pid] = $this->factory->createFork(
+            $pid,
+            $this->factory->createSharedMemory($pid),
+            $this->debug
+        );
     }
 
     public function monitor($signal = SIGUSR1)
