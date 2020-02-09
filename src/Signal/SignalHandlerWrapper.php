@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Signal;
+namespace TheLevti\phpfork\Signal;
 
 /**
  * Wraps an existing signal handler with a new signal handler.

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Util;
+namespace TheLevti\phpfork\Util;
 
 use PHPUnit\Framework\TestCase;
 

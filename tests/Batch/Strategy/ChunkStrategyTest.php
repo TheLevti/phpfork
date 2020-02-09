@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Batch\Strategy;
+namespace TheLevti\phpfork\Batch\Strategy;
 
 use PHPUnit\Framework\TestCase;
 

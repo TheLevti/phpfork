@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Batch\Strategy;
+namespace TheLevti\phpfork\Batch\Strategy;
 
-use Phpfork\Exception\UnexpectedTypeException;
+use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 /**
  * Creates the batch iterator using array_chunk().

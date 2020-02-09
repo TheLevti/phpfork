@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Deferred;
+namespace TheLevti\phpfork\Deferred;
 
-use Phpfork\Exception\UnexpectedTypeException;
+use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 class DeferredAggregate implements PromiseInterface
 {
@@ -25,7 +25,7 @@ class DeferredAggregate implements PromiseInterface
         // validate children
         foreach ($children as $child) {
             if (!$child instanceof PromiseInterface) {
-                throw new UnexpectedTypeException($child, 'Phpfork\Deferred\PromiseInterface');
+                throw new UnexpectedTypeException($child, 'TheLevti\phpfork\Deferred\PromiseInterface');
             }
         }
 

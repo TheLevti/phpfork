@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Batch;
+namespace TheLevti\phpfork\Batch;
 
-use Phpfork\Exception\UnexpectedTypeException;
-use Phpfork\SharedMemory;
+use TheLevti\phpfork\Exception\UnexpectedTypeException;
+use TheLevti\phpfork\SharedMemory;
 
 class BatchRunner
 {

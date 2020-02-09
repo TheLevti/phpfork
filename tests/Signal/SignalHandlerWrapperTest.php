@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Signal;
+namespace TheLevti\phpfork\Signal;
 
 use PHPUnit\Framework\TestCase;
 

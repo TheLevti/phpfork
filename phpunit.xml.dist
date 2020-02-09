@@ -11,7 +11,7 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Phpfork Test Suite">
+        <testsuite name="phpfork Test Suite">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>

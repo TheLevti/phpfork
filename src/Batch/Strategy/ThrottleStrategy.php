@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Batch\Strategy;
+namespace TheLevti\phpfork\Batch\Strategy;
 
-use Phpfork\Util\ThrottleIterator;
+use TheLevti\phpfork\Util\ThrottleIterator;
 
 class ThrottleStrategy implements StrategyInterface
 {

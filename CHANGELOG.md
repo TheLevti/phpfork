@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2020-02-09
+
+### Changed
+
+- 27d0cc4: Add vendor namespace prefix and improve README.md.
+
+### Fixed
+
+- kriswallsmith/spork#40: Do not lose fork messages after receive call.
+
 ## [3.0.0] - 2020-02-02
 
 ### Changed
@@ -72,7 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added progress callbacks to Deferred.
 - Added serializable objects for exit and error messages.
 
-[Unreleased]: https://github.com/TheLevti/phpfork/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/TheLevti/phpfork/compare/4.0.0...HEAD
+[4.0.0]: https://github.com/TheLevti/phpfork/releases/4.0.0
 [3.0.0]: https://github.com/TheLevti/phpfork/releases/3.0.0
 [2.0.2]: https://github.com/TheLevti/phpfork/releases/2.0.2
 [2.0.1]: https://github.com/TheLevti/phpfork/releases/2.0.1

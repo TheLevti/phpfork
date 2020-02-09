@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Deferred;
+namespace TheLevti\phpfork\Deferred;
 
-use Phpfork\Exception\UnexpectedTypeException;
+use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 class Deferred implements DeferredInterface
 {

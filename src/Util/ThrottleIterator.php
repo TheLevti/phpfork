@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Util;
+namespace TheLevti\phpfork\Util;
 
-use Phpfork\Exception\UnexpectedTypeException;
+use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 /**
  * Throttles iteration based on a system load threshold.

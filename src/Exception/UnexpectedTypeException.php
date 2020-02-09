@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Exception;
+namespace TheLevti\phpfork\Exception;
 
 class UnexpectedTypeException extends \LogicException
 {
