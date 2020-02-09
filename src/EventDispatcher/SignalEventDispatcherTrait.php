@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\EventDispatcher;
+namespace TheLevti\phpfork\EventDispatcher;
 
-use Phpfork\Signal\SignalHandlerWrapper;
+use TheLevti\phpfork\Signal\SignalHandlerWrapper;
 use UnexpectedValueException;
 
 /**
@@ -26,7 +26,7 @@ trait SignalEventDispatcherTrait
      * Holds signal handler wrappers to preserve a potentially already existing
      * signal handler.
      *
-     * @var array<int,\Phpfork\Signal\SignalHandlerWrapper> $sigHandlerWrappers
+     * @var array<int,\TheLevti\phpfork\Signal\SignalHandlerWrapper> $sigHandlerWrappers
      */
     private $sigHandlerWrappers = [];
 

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\EventDispatcher;
+namespace TheLevti\phpfork\EventDispatcher;
 
 use Symfony\Contracts\EventDispatcher\Event as BaseEvent;
 

@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Batch;
+namespace TheLevti\phpfork\Batch;
 
-use Phpfork\Batch\Strategy\ChunkStrategy;
-use Phpfork\Batch\Strategy\StrategyInterface;
-use Phpfork\Exception\UnexpectedTypeException;
-use Phpfork\ProcessManager;
+use TheLevti\phpfork\Batch\Strategy\ChunkStrategy;
+use TheLevti\phpfork\Batch\Strategy\StrategyInterface;
+use TheLevti\phpfork\Exception\UnexpectedTypeException;
+use TheLevti\phpfork\ProcessManager;
 
 class BatchJob
 {

@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Exception;
+namespace TheLevti\phpfork\Exception;
 
-use Phpfork\Util\Error;
+use TheLevti\phpfork\Util\Error;
 
 /**
  * Turns an error passed through shared memory into an exception.

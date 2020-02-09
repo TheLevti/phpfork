@@ -11,11 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Deferred;
+namespace TheLevti\phpfork\Deferred;
 
 use LogicException;
-use Phpfork\Exception\UnexpectedTypeException;
 use PHPUnit\Framework\TestCase;
+use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 class DeferredTest extends TestCase
 {

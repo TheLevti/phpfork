@@ -11,10 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Phpfork;
+namespace TheLevti\phpfork;
 
-use Phpfork\Batch\BatchJob;
-use Phpfork\Batch\Strategy\StrategyInterface;
+use TheLevti\phpfork\Batch\BatchJob;
+use TheLevti\phpfork\Batch\Strategy\StrategyInterface;
 
 class Factory
 {
@@ -38,7 +38,7 @@ class Factory
      * @param int|null $pid    The child process id or null if this is the child.
      * @param int|null $signal The signal to send after writing to shared memory.
      *
-     * @return \Phpfork\SharedMemory A new shared memory instance.
+     * @return \TheLevti\phpfork\SharedMemory A new shared memory instance.
      */
     public function createSharedMemory(?int $pid = null, ?int $signal = null): SharedMemory
     {

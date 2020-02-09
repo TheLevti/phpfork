@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Phpfork;
+namespace TheLevti\phpfork;
 
-use Phpfork\Exception\ProcessControlException;
+use TheLevti\phpfork\Exception\ProcessControlException;
 
 /**
  * Sends messages between processes.

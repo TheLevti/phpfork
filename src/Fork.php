@@ -11,13 +11,13 @@
 
 declare(strict_types=1);
 
-namespace Phpfork;
+namespace TheLevti\phpfork;
 
-use Phpfork\Deferred\Deferred;
-use Phpfork\Deferred\DeferredInterface;
-use Phpfork\Exception\ForkException;
-use Phpfork\Exception\ProcessControlException;
-use Phpfork\Util\ExitMessage;
+use TheLevti\phpfork\Deferred\Deferred;
+use TheLevti\phpfork\Deferred\DeferredInterface;
+use TheLevti\phpfork\Exception\ForkException;
+use TheLevti\phpfork\Exception\ProcessControlException;
+use TheLevti\phpfork\Util\ExitMessage;
 
 class Fork implements DeferredInterface
 {

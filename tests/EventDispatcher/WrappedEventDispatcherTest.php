@@ -11,11 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\EventDispatcher;
+namespace TheLevti\phpfork\EventDispatcher;
 
-use Phpfork\ProcessManager;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use TheLevti\phpfork\ProcessManager;
 
 class WrappedEventDispatcherTest extends TestCase
 {
@@ -24,7 +24,7 @@ class WrappedEventDispatcherTest extends TestCase
     /**
      * Process manager instance.
      *
-     * @var \Phpfork\ProcessManager $processManager
+     * @var \TheLevti\phpfork\ProcessManager $processManager
      */
     private $processManager;
 

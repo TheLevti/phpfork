@@ -11,18 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Phpfork;
+namespace TheLevti\phpfork;
 
 use Exception;
 use InvalidArgumentException;
-use Phpfork\Batch\Strategy\StrategyInterface;
-use Phpfork\EventDispatcher\Events;
-use Phpfork\EventDispatcher\SignalEventDispatcher;
-use Phpfork\EventDispatcher\SignalEventDispatcherInterface;
-use Phpfork\Exception\ProcessControlException;
-use Phpfork\Util\Error;
-use Phpfork\Util\ExitMessage;
 use Symfony\Contracts\EventDispatcher\Event;
+use TheLevti\phpfork\Batch\Strategy\StrategyInterface;
+use TheLevti\phpfork\EventDispatcher\Events;
+use TheLevti\phpfork\EventDispatcher\SignalEventDispatcher;
+use TheLevti\phpfork\EventDispatcher\SignalEventDispatcherInterface;
+use TheLevti\phpfork\Exception\ProcessControlException;
+use TheLevti\phpfork\Util\Error;
+use TheLevti\phpfork\Util\ExitMessage;
 
 class ProcessManager
 {
@@ -33,7 +33,7 @@ class ProcessManager
     private $zombieOkay;
     private $signal;
 
-    /** @var array<int,\Phpfork\Fork> $forks */
+    /** @var array<int,\TheLevti\phpfork\Fork> $forks */
     private $forks;
 
     public function __construct(
@@ -89,7 +89,7 @@ class ProcessManager
      * Forks something into another process and returns a deferred object.
      *
      * @param callable $callable Code to execute in a fork.
-     * @return \Phpfork\Fork Newly created fork.
+     * @return \TheLevti\phpfork\Fork Newly created fork.
      */
     public function fork(callable $callable): Fork
     {

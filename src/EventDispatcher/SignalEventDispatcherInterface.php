@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\EventDispatcher;
+namespace TheLevti\phpfork\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -28,7 +28,7 @@ interface SignalEventDispatcherInterface extends EventDispatcherInterface
      * @param  mixed $signinfo If operating systems supports siginfo_t
      *                         structures, this will be an array of signal
      *                         information dependent on the signal.
-     * @return \Phpfork\EventDispatcher\SignalEvent Holds the signal information.
+     * @return \TheLevti\phpfork\EventDispatcher\SignalEvent Holds the signal information.
      */
     public function dispatchSignal(int $signo, $signinfo): SignalEvent;
 

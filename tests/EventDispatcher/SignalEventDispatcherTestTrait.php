@@ -11,11 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\EventDispatcher;
+namespace TheLevti\phpfork\EventDispatcher;
 
-use Phpfork\SharedMemory;
 use ReflectionObject;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use TheLevti\phpfork\SharedMemory;
 use UnexpectedValueException;
 
 /**

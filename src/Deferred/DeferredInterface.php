@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Phpfork\Deferred;
+namespace TheLevti\phpfork\Deferred;
 
 interface DeferredInterface extends PromiseInterface
 {
