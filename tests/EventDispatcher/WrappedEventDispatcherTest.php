@@ -57,7 +57,13 @@ class WrappedEventDispatcherTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->processManager->getEventDispatcher()->removeSignalHandlerWrappers();
+        $eventDispatcher = $this->processManager->getEventDispatcher();
+        if (
+            $eventDispatcher instanceof SignalEventDispatcher ||
+            $eventDispatcher instanceof WrappedEventDispatcher
+        ) {
+            $eventDispatcher->removeSignalHandlerWrappers();
+        }
 
         pcntl_async_signals($this->async);
         $this->errorReporting = error_reporting($this->errorReporting);
@@ -65,7 +71,7 @@ class WrappedEventDispatcherTest extends TestCase
         parent::tearDown();
     }
 
-    public function testDelegate()
+    public function testDelegate(): void
     {
         $eventDispatcher = $this->processManager->getEventDispatcher();
         $sigEventSubscriber = new SignalEventSubscriber();

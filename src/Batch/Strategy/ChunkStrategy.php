@@ -20,16 +20,23 @@ use TheLevti\phpfork\Exception\UnexpectedTypeException;
  */
 class ChunkStrategy extends AbstractStrategy
 {
+    /**
+     * @var int $forks
+     */
     private $forks;
+
+    /**
+     * @var bool $preserveKeys
+     */
     private $preserveKeys;
 
-    public function __construct($forks = 3, $preserveKeys = false)
+    public function __construct(int $forks = 3, bool $preserveKeys = false)
     {
         $this->forks = $forks;
         $this->preserveKeys = $preserveKeys;
     }
 
-    public function createBatches($data)
+    public function createBatches($data): iterable
     {
         if (!is_array($data) && !$data instanceof \Traversable) {
             throw new UnexpectedTypeException($data, 'array or Traversable');

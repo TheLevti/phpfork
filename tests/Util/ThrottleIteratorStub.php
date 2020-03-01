@@ -15,15 +15,22 @@ namespace TheLevti\phpfork\Util;
 
 class ThrottleIteratorStub extends ThrottleIterator
 {
+    /**
+     * @var array<int,float> $loads
+     */
     public $loads = [];
+
+    /**
+     * @var array<int,int> $sleeps
+     */
     public $sleeps = [];
 
-    protected function getLoad()
+    protected function getLoad(): float
     {
-        return (int) array_shift($this->loads);
+        return (float)array_shift($this->loads);
     }
 
-    protected function sleep($period)
+    protected function sleep(int $period): void
     {
         $this->sleeps[] = $period;
     }

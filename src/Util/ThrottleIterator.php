@@ -13,20 +13,34 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork\Util;
 
+use ArrayIterator;
+use Iterator;
+use IteratorAggregate;
+use OuterIterator;
 use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 /**
  * Throttles iteration based on a system load threshold.
  */
-class ThrottleIterator implements \OuterIterator
+class ThrottleIterator implements OuterIterator
 {
+    /** @var callable|iterable<int|string,mixed> $inner */
     private $inner;
+
+    /** @var float $threshold */
     private $threshold;
+
+    /** @var int|null $lastThrottle */
     private $lastThrottle;
 
-    public function __construct($inner, $threshold)
+    /**
+     * @param callable|iterable<int|string,mixed> $inner
+     * @param float $threshold
+     * @throws UnexpectedTypeException
+     */
+    public function __construct($inner, float $threshold)
     {
-        if (!is_callable($inner) && !is_array($inner) && !$inner instanceof \Traversable) {
+        if (!is_callable($inner) && !is_iterable($inner)) {
             throw new UnexpectedTypeException($inner, 'callable, array, or Traversable');
         }
 
@@ -36,31 +50,33 @@ class ThrottleIterator implements \OuterIterator
 
     /**
      * Attempts to lazily resolve the supplied inner to an instance of Iterator.
+     *
+     * @return Iterator<int|string,mixed>
      */
-    public function getInnerIterator()
+    public function getInnerIterator(): Iterator
     {
         if (is_callable($this->inner)) {
-            // callable
             $this->inner = call_user_func($this->inner);
         }
 
         if (is_array($this->inner)) {
-            // array
-            $this->inner = new \ArrayIterator($this->inner);
-        } elseif ($this->inner instanceof \IteratorAggregate) {
-            // IteratorAggregate
-            while ($this->inner instanceof \IteratorAggregate) {
+            $this->inner = new ArrayIterator($this->inner);
+        } elseif ($this->inner instanceof IteratorAggregate) {
+            while ($this->inner instanceof IteratorAggregate) {
                 $this->inner = $this->inner->getIterator();
             }
         }
 
-        if (!$this->inner instanceof \Iterator) {
+        if (!$this->inner instanceof Iterator) {
             throw new UnexpectedTypeException($this->inner, 'Iterator');
         }
 
         return $this->inner;
     }
 
+    /**
+     * @return mixed
+     */
     public function current()
     {
         // only throttle every 5s
@@ -71,39 +87,49 @@ class ThrottleIterator implements \OuterIterator
         return $this->getInnerIterator()->current();
     }
 
+    /**
+     *
+     * @return scalar
+     */
     public function key()
     {
         return $this->getInnerIterator()->key();
     }
 
+    /**
+     * @return void
+     */
     public function next()
     {
-        return $this->getInnerIterator()->next();
+        $this->getInnerIterator()->next();
     }
 
+    /**
+     * @return void
+     */
     public function rewind()
     {
-        return $this->getInnerIterator()->rewind();
+        $this->getInnerIterator()->rewind();
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return $this->getInnerIterator()->valid();
     }
 
-    protected function getLoad()
+    protected function getLoad(): float
     {
         list($load) = sys_getloadavg();
 
         return $load;
     }
 
-    protected function sleep($period)
+    protected function sleep(int $period): void
     {
         sleep($period);
     }
 
-    private function throttle($period = 1)
+    private function throttle(int $period = 1): void
     {
         $this->lastThrottle = time();
 

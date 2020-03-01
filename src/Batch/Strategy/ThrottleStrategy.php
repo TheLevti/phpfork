@@ -17,28 +17,35 @@ use TheLevti\phpfork\Util\ThrottleIterator;
 
 class ThrottleStrategy implements StrategyInterface
 {
+    /**
+     * @var \TheLevti\phpfork\Batch\Strategy\StrategyInterface $delegate
+     */
     private $delegate;
+
+    /**
+     * @var int $threshold
+     */
     private $threshold;
 
-    public function __construct(StrategyInterface $delegate, $threshold = 3)
+    public function __construct(StrategyInterface $delegate, int $threshold = 3)
     {
         $this->delegate = $delegate;
         $this->threshold = $threshold;
     }
 
-    public function createBatches($data)
+    public function createBatches($data): iterable
     {
         $batches = $this->delegate->createBatches($data);
 
         // wrap each batch in the throttle iterator
-        foreach ($batches as $i => $batch) {
-            $batches[$i] = new ThrottleIterator($batch, $this->threshold);
+        foreach ($batches as &$batch) {
+            $batch = new ThrottleIterator($batch, $this->threshold);
         }
 
         return $batches;
     }
 
-    public function createRunner($batch, $callback)
+    public function createRunner($batch, $callback): callable
     {
         return $this->delegate->createRunner($batch, $callback);
     }

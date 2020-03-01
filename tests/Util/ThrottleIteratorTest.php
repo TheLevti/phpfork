@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class ThrottleIteratorTest extends TestCase
 {
+    /** @var \TheLevti\phpfork\Util\ThrottleIteratorStub $iterator */
     private $iterator;
 
     protected function setUp(): void
@@ -30,7 +31,7 @@ class ThrottleIteratorTest extends TestCase
         unset($this->iterator);
     }
 
-    public function testIteration()
+    public function testIteration(): void
     {
         iterator_to_array($this->iterator);
         $this->assertEquals([1, 2, 4], $this->iterator->sleeps);

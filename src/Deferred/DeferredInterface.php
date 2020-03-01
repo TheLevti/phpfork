@@ -19,10 +19,11 @@ interface DeferredInterface extends PromiseInterface
      * Notifies the promise of progress. Any arguments will be passed along to
      * the callbacks.
      *
-     * @throws \LogicException   If the promise is not pending
-     * @return DeferredInterface The current promise
+     * @param  mixed ...$args Arguments that are passed to the callbacks.
+     * @throws \LogicException If the promise is not pending
+     * @return \TheLevti\phpfork\Deferred\DeferredInterface The current promise
      */
-    public function notify();
+    public function notify(...$args): self;
 
     /**
      * Marks the current promise as successful.
@@ -30,10 +31,11 @@ interface DeferredInterface extends PromiseInterface
      * Calls "always" callbacks first, followed by "done" callbacks. Any
      * arguments will be passed along to the callbacks
      *
-     * @throws \LogicException   If the promise was previously rejected
-     * @return DeferredInterface The current promise
+     * @param  mixed ...$args Arguments that are passed to the callbacks.
+     * @throws \LogicException If the promise was previously rejected
+     * @return \TheLevti\phpfork\Deferred\DeferredInterface The current promise
      */
-    public function resolve();
+    public function resolve(...$args): self;
 
     /**
      * Marks the current promise as failed.
@@ -41,8 +43,9 @@ interface DeferredInterface extends PromiseInterface
      * Calls "always" callbacks first, followed by "fail" callbacks. Any
      * arguments will be passed along to the callbacks.
      *
-     * @throws \LogicException   If the promise was previously resolved
-     * @return DeferredInterface The current promise
+     * @param  mixed ...$args Arguments that are passed to the callbacks.
+     * @throws \LogicException If the promise was previously resolved
+     * @return \TheLevti\phpfork\Deferred\DeferredInterface The current promise
      */
-    public function reject();
+    public function reject(...$args): self;
 }

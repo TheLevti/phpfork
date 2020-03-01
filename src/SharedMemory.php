@@ -22,17 +22,20 @@ class SharedMemory
 {
     /** @var int $pid */
     private $pid;
-    /** @var int|null $pid */
+
+    /** @var int|null $ppid */
     private $ppid;
+
+    /** @var int|null $signal */
     private $signal;
 
     /**
      * Constructor.
      *
-     * @param integer $pid    The child process id or null if this is the child
-     * @param integer $signal The signal to send after writing to shared memory
+     * @param int|null $pid    The child process id or null if this is the child
+     * @param int|null $signal The signal to send after writing to shared memory
      */
-    public function __construct($pid = null, $signal = null)
+    public function __construct(?int $pid = null, ?int $signal = null)
     {
         if (null === $pid) {
             // child
@@ -105,7 +108,7 @@ class SharedMemory
      * @param int            $pause   The number of microseconds to pause after
      *                                signalling.
      */
-    public function send($message, $signal = null, $pause = 500)
+    public function send($message, $signal = null, int $pause = 500): void
     {
         $messages = $this->receive();
         if (!is_array($message)) {
@@ -141,7 +144,15 @@ class SharedMemory
             return;
         }
 
-        $this->signal(null === $signal ? $this->signal : $signal);
+        if (null === $signal) {
+            $signal = $this->signal;
+
+            if (null == $signal) {
+                return;
+            }
+        }
+
+        $this->signal($signal);
 
         usleep($pause);
     }
@@ -149,7 +160,7 @@ class SharedMemory
     /**
      * Sends a signal to the other process.
      */
-    public function signal($signal)
+    public function signal(int $signal): bool
     {
         $pid = null === $this->ppid ? $this->pid : $this->ppid;
 

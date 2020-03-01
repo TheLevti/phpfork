@@ -18,15 +18,15 @@ use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 class DeferredAggregateTest extends TestCase
 {
-    public function testInvalidChild()
+    public function testInvalidChild(): void
     {
         $this->expectException(UnexpectedTypeException::class);
         $this->expectDeprecationMessage('PromiseInterface');
 
-        $defer = new DeferredAggregate(['asdf']);
+        new DeferredAggregate(['asdf']);
     }
 
-    public function testNoChildren()
+    public function testNoChildren(): void
     {
         $defer = new DeferredAggregate([]);
 
@@ -38,7 +38,7 @@ class DeferredAggregateTest extends TestCase
         $this->assertEquals(['done'], $log);
     }
 
-    public function testResolvedChildren()
+    public function testResolvedChildren(): void
     {
         $child = new Deferred();
         $child->resolve();
@@ -53,7 +53,7 @@ class DeferredAggregateTest extends TestCase
         $this->assertEquals(['done'], $log);
     }
 
-    public function testResolution()
+    public function testResolution(): void
     {
         $child1 = new Deferred();
         $child2 = new Deferred();
@@ -74,7 +74,7 @@ class DeferredAggregateTest extends TestCase
         $this->assertEquals(['done'], $log);
     }
 
-    public function testRejection()
+    public function testRejection(): void
     {
         $child1 = new Deferred();
         $child2 = new Deferred();
@@ -101,7 +101,7 @@ class DeferredAggregateTest extends TestCase
         $this->assertEquals(['fail'], $log);
     }
 
-    public function testNested()
+    public function testNested(): void
     {
         $child1a = new Deferred();
         $child1b = new Deferred();
@@ -117,7 +117,7 @@ class DeferredAggregateTest extends TestCase
         $this->assertEquals('resolved', $defer->getState());
     }
 
-    public function testFail()
+    public function testFail(): void
     {
         $child = new Deferred();
         $defer = new DeferredAggregate([$child]);

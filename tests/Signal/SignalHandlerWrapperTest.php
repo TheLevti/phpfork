@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class SignalHandlerWrapperTest extends TestCase
 {
-    public function testSignalHandlerWrapper()
+    public function testSignalHandlerWrapper(): void
     {
         $prevCalls = 0;
         $currCalls = 0;

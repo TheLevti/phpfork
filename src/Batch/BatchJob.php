@@ -15,87 +15,121 @@ namespace TheLevti\phpfork\Batch;
 
 use TheLevti\phpfork\Batch\Strategy\ChunkStrategy;
 use TheLevti\phpfork\Batch\Strategy\StrategyInterface;
-use TheLevti\phpfork\Exception\UnexpectedTypeException;
+use TheLevti\phpfork\Fork;
 use TheLevti\phpfork\ProcessManager;
 
 class BatchJob
 {
-    private $manager;
+    /**
+     * @var \TheLevti\phpfork\ProcessManager $processManager
+     */
+    protected $processManager;
+
+    /**
+     * @var mixed $data
+     */
     private $data;
+
+    /**
+     * @var \TheLevti\phpfork\Batch\Strategy\StrategyInterface $strategy
+     */
     private $strategy;
+
+    /**
+     * @var string $name
+     */
     private $name;
+
+    /**
+     * @var callable $callback
+     */
     private $callback;
 
-    public function __construct(ProcessManager $manager, $data = null, StrategyInterface $strategy = null)
+    /**
+     * @param \TheLevti\phpfork\ProcessManager $processManager
+     * @param mixed|null $data
+     * @param \TheLevti\phpfork\Batch\Strategy\StrategyInterface|null $strategy
+     * @return void
+     */
+    public function __construct(ProcessManager $processManager, $data = null, StrategyInterface $strategy = null)
     {
-        $this->manager = $manager;
+        $this->processManager = $processManager;
         $this->data = $data;
         $this->strategy = $strategy ?: new ChunkStrategy();
         $this->name = '<anonymous>';
     }
 
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function setStrategy(StrategyInterface $strategy)
+    public function setStrategy(StrategyInterface $strategy): self
     {
         $this->strategy = $strategy;
 
         return $this;
     }
 
-    public function setData($data)
+    /**
+     * @param mixed $data
+     * @return \TheLevti\phpfork\Batch\BatchJob
+     */
+    public function setData($data): self
     {
         $this->data = $data;
 
         return $this;
     }
 
-    public function setCallback($callback)
+    public function setCallback(callable $callback): self
     {
-        if (!is_callable($callback)) {
-            throw new UnexpectedTypeException($callback, 'callable');
-        }
-
         $this->callback = $callback;
 
         return $this;
     }
 
-    public function execute($callback = null)
+    public function execute(?callable $callback = null): Fork
     {
         if (null !== $callback) {
             $this->setCallback($callback);
         }
 
-        return $this->manager->fork($this)->setName($this->name . ' batch');
+        return $this->processManager->fork($this)->setName($this->name . ' batch');
     }
 
     /**
      * Runs in a child process.
      *
-     * @see execute()
+     * @see \TheLevti\phpfork\Batch\BatchJob::execute()
+     *
+     * @return array<mixed> Result from the batch job.
      */
-    public function __invoke()
+    public function __invoke(): array
     {
+        /** @var array<int,\TheLevti\phpfork\Fork> $forks */
         $forks = [];
         foreach ($this->strategy->createBatches($this->data) as $index => $batch) {
-            $forks[] = $this->manager
+            $forks[] = $this->processManager
                 ->fork($this->strategy->createRunner($batch, $this->callback))
                 ->setName(sprintf('%s batch #%d', $this->name, $index))
             ;
         }
 
-        // block until all forks have exited
-        $this->manager->wait();
+        $this->processManager->wait();
 
+        /** @var array<int,mixed> $results */
         $results = [];
         foreach ($forks as $fork) {
-            $results = array_merge($results, $fork->getResult());
+            $batchResult = $fork->getResult();
+
+            if (is_array($batchResult)) {
+                $results = array_merge($results, $batchResult);
+            } else {
+                $results[] = $batchResult;
+            }
         }
 
         return $results;

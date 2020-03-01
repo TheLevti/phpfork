@@ -13,18 +13,24 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork\Exception;
 
+use RuntimeException;
 use TheLevti\phpfork\Util\Error;
 
 /**
  * Turns an error passed through shared memory into an exception.
  */
-class ForkException extends \RuntimeException
+class ForkException extends RuntimeException
 {
+    /** @var string $name */
     private $name;
+
+    /** @var int $pid */
     private $pid;
+
+    /** @var \TheLevti\phpfork\Util\Error|null $error */
     private $error;
 
-    public function __construct($name, $pid, Error $error = null)
+    public function __construct(string $name, int $pid, ?Error $error = null)
     {
         $this->name = $name;
         $this->pid = $pid;
@@ -50,12 +56,17 @@ class ForkException extends \RuntimeException
         }
     }
 
-    public function getPid()
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getPid(): int
     {
         return $this->pid;
     }
 
-    public function getError()
+    public function getError(): ?Error
     {
         return $this->error;
     }

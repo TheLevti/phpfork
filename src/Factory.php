@@ -21,11 +21,11 @@ class Factory
     /**
      * Creates a new batch job instance.
      *
-     * @param ProcessManager    $manager  The process manager
-     * @param null              $data     Data for the batch job
-     * @param StrategyInterface $strategy The strategy
+     * @param \TheLevti\phpfork\ProcessManager                        $manager  The process manager.
+     * @param mixed|null                                              $data     Data for the batch job.
+     * @param \TheLevti\phpfork\Batch\Strategy\StrategyInterface|null $strategy The strategy.
      *
-     * @return BatchJob A new batch job instance
+     * @return \TheLevti\phpfork\Batch\BatchJob A new batch job instance
      */
     public function createBatchJob(ProcessManager $manager, $data = null, StrategyInterface $strategy = null)
     {
