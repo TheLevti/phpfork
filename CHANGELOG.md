@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0] - 2020-03-28
+
 ### Changed
 
 - #12: Fix all phpstan errors and general typing improvements.
@@ -86,7 +88,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added progress callbacks to Deferred.
 - Added serializable objects for exit and error messages.
 
-[Unreleased]: https://github.com/TheLevti/phpfork/compare/4.0.0...HEAD
+[Unreleased]: https://github.com/TheLevti/phpfork/compare/5.0.0...HEAD
+[5.0.0]: https://github.com/TheLevti/phpfork/releases/5.0.0
 [4.0.0]: https://github.com/TheLevti/phpfork/releases/4.0.0
 [3.0.0]: https://github.com/TheLevti/phpfork/releases/3.0.0
 [2.0.2]: https://github.com/TheLevti/phpfork/releases/2.0.2
