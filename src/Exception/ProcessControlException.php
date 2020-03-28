@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork\Exception;
 
-class ProcessControlException extends \RuntimeException
+use RuntimeException;
+
+class ProcessControlException extends RuntimeException
 {
 }

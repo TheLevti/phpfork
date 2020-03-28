@@ -23,7 +23,7 @@ use UnexpectedValueException;
  */
 trait SignalEventDispatcherTestTrait
 {
-    public function testSingleListenerOneSignal()
+    public function testSingleListenerOneSignal(): void
     {
         $signaled = false;
 
@@ -185,10 +185,13 @@ trait SignalEventDispatcherTestTrait
         $this->assertEquals(5, $sigOrig);
         $this->assertEquals(3, $sigNew);
 
-        $this->processManager
-            ->getEventDispatcher()
-            ->removeSignalHandlerWrappers()
-        ;
+        $eventDispatcher = $this->processManager->getEventDispatcher();
+        if (
+            $eventDispatcher instanceof SignalEventDispatcher ||
+            $eventDispatcher instanceof WrappedEventDispatcher
+        ) {
+            $eventDispatcher->removeSignalHandlerWrappers();
+        }
 
         $this->assertEquals(
             $origSigHandler,

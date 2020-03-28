@@ -28,16 +28,16 @@ interface PromiseInterface
      *
      * @return string A promise state constant
      */
-    public function getState();
+    public function getState(): string;
 
     /**
      * Adds a callback to be called upon progress.
      *
      * @param callable $progress The callback
      *
-     * @return PromiseInterface The current promise
+     * @return \TheLevti\phpfork\Deferred\PromiseInterface The current promise
      */
-    public function progress($progress);
+    public function progress(callable $progress): self;
 
     /**
      * Adds a callback to be called whether the promise is resolved or rejected.
@@ -47,9 +47,9 @@ interface PromiseInterface
      *
      * @param callable $always The callback
      *
-     * @return PromiseInterface The current promise
+     * @return \TheLevti\phpfork\Deferred\PromiseInterface The current promise
      */
-    public function always($always);
+    public function always(callable $always): self;
 
     /**
      * Adds a callback to be called when the promise completes successfully.
@@ -58,9 +58,9 @@ interface PromiseInterface
      *
      * @param callable $done The callback
      *
-     * @return PromiseInterface The current promise
+     * @return \TheLevti\phpfork\Deferred\PromiseInterface The current promise
      */
-    public function done($done);
+    public function done(callable $done): self;
 
     /**
      * Adds a callback to be called when the promise fails.
@@ -69,17 +69,17 @@ interface PromiseInterface
      *
      * @param callable $fail The callback
      *
-     * @return PromiseInterface The current promise
+     * @return \TheLevti\phpfork\Deferred\PromiseInterface The current promise
      */
-    public function fail($fail);
+    public function fail(callable $fail): self;
 
     /**
      * Adds done and fail callbacks.
      *
      * @param callable $done The done callback
-     * @param callable $fail The fail callback
+     * @param callable|null $fail The fail callback
      *
-     * @return PromiseInterface The current promise
+     * @return \TheLevti\phpfork\Deferred\PromiseInterface The current promise
      */
-    public function then($done, $fail = null);
+    public function then(callable $done, callable $fail = null): self;
 }

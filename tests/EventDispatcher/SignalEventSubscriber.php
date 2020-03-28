@@ -17,14 +17,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SignalEventSubscriber implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    /**
+     * @return array<string,array<int,string|int>>
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             SignalEvent::getEventName(SIGUSR1) => ['onSigusr1', -128],
         ];
     }
 
-    public function onSigusr1()
+    public function onSigusr1(): void
     {
         // Do nothing.
     }

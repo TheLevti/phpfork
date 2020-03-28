@@ -23,9 +23,9 @@ interface StrategyInterface
      *
      * @param mixed $data The raw batch data
      *
-     * @return array|\Traversable An iterator of batches
+     * @return iterable<int|string,mixed> An iterator of batches
      */
-    public function createBatches($data);
+    public function createBatches($data): iterable;
 
     /**
      * Creates a batch runner for the supplied list.
@@ -33,10 +33,10 @@ interface StrategyInterface
      * A batch runner is a callable that is passed to ProcessManager::fork()
      * that should run each item in the supplied batch through a callable.
      *
-     * @param mixed    $batch    A batch of items
+     * @param array<int|string,mixed>|callable $batch A batch of items
      * @param callable $callback The batch callback
      *
      * @return callable A callable for the child process
      */
-    public function createRunner($batch, $callback);
+    public function createRunner($batch, $callback): callable;
 }

@@ -13,79 +13,82 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork\Util;
 
+use Exception;
 use Serializable;
 
 class Error implements Serializable
 {
+    /** @var string $class */
     private $class;
+
+    /** @var string $message */
     private $message;
+
+    /** @var string $file */
     private $file;
+
+    /** @var int $line */
     private $line;
+
+    /** @var mixed $code */
     private $code;
 
-    public static function fromException(\Exception $e)
+    public static function fromException(Exception $exception): self
     {
-        $flat = new self();
-        $flat->setClass(get_class($e));
-        $flat->setMessage($e->getMessage());
-        $flat->setFile($e->getFile());
-        $flat->setLine($e->getLine());
-        $flat->setCode($e->getCode());
-
-        return $flat;
+        return new self(
+            get_class($exception),
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine(),
+            $exception->getCode()
+        );
     }
 
-    public function getClass()
+    /**
+     * @param string $class
+     * @param string $message
+     * @param string $file
+     * @param int $line
+     * @param mixed $code
+     */
+    public function __construct(string $class, string $message, string $file, int $line, $code)
+    {
+        $this->class = $class;
+        $this->message = $message;
+        $this->file = $file;
+        $this->line = $line;
+        $this->code = $code;
+    }
+
+    public function getClass(): string
     {
         return $this->class;
     }
 
-    public function setClass($class)
-    {
-        $this->class = $class;
-    }
-
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
-    public function setMessage($message)
-    {
-        $this->message = $message;
-    }
-
-    public function getFile()
+    public function getFile(): string
     {
         return $this->file;
     }
 
-    public function setFile($file)
-    {
-        $this->file = $file;
-    }
-
-    public function getLine()
+    public function getLine(): int
     {
         return $this->line;
     }
 
-    public function setLine($line)
-    {
-        $this->line = $line;
-    }
-
+    /**
+     * @return mixed
+     */
     public function getCode()
     {
         return $this->code;
     }
 
-    public function setCode($code)
-    {
-        $this->code = $code;
-    }
-
-    public function serialize()
+    public function serialize(): string
     {
         return serialize([
             $this->class,
@@ -96,7 +99,11 @@ class Error implements Serializable
         ]);
     }
 
-    public function unserialize($str)
+    /**
+     * @param string $serialized
+     * @return void
+     */
+    public function unserialize($serialized)
     {
         list(
             $this->class,
@@ -104,6 +111,6 @@ class Error implements Serializable
             $this->file,
             $this->line,
             $this->code
-        ) = unserialize($str);
+        ) = unserialize($serialized);
     }
 }
