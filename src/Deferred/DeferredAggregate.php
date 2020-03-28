@@ -17,12 +17,22 @@ use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 class DeferredAggregate implements PromiseInterface
 {
+    /**
+     * @var array<int|string,\TheLevti\phpfork\Deferred\PromiseInterface> $children
+     */
     private $children;
+
+    /**
+     * @var \TheLevti\phpfork\Deferred\Deferred $delegate
+     */
     private $delegate;
 
+    /**
+     * @param array<int|string,\TheLevti\phpfork\Deferred\PromiseInterface> $children
+     * @throws UnexpectedTypeException
+     */
     public function __construct(array $children)
     {
-        // validate children
         foreach ($children as $child) {
             if (!$child instanceof PromiseInterface) {
                 throw new UnexpectedTypeException($child, 'TheLevti\phpfork\Deferred\PromiseInterface');
@@ -41,52 +51,55 @@ class DeferredAggregate implements PromiseInterface
         $this->tick();
     }
 
-    public function getState()
+    public function getState(): string
     {
         return $this->delegate->getState();
     }
 
-    public function getChildren()
+    /**
+     * @return array<int|string,\TheLevti\phpfork\Deferred\PromiseInterface>
+     */
+    public function getChildren(): array
     {
         return $this->children;
     }
 
-    public function progress($progress)
+    public function progress(callable $progress): PromiseInterface
     {
         $this->delegate->progress($progress);
 
         return $this;
     }
 
-    public function always($always)
+    public function always(callable $always): PromiseInterface
     {
         $this->delegate->always($always);
 
         return $this;
     }
 
-    public function done($done)
+    public function done(callable $done): PromiseInterface
     {
         $this->delegate->done($done);
 
         return $this;
     }
 
-    public function fail($fail)
+    public function fail(callable $fail): PromiseInterface
     {
         $this->delegate->fail($fail);
 
         return $this;
     }
 
-    public function then($done, $fail = null)
+    public function then(callable $done, callable $fail = null): PromiseInterface
     {
         $this->delegate->then($done, $fail);
 
         return $this;
     }
 
-    public function tick()
+    public function tick(): void
     {
         $pending = count($this->children);
 

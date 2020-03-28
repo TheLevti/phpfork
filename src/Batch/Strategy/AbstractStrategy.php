@@ -17,7 +17,7 @@ use TheLevti\phpfork\Batch\BatchRunner;
 
 abstract class AbstractStrategy implements StrategyInterface
 {
-    public function createRunner($batch, $callback)
+    public function createRunner($batch, $callback): callable
     {
         return new BatchRunner($batch, $callback);
     }

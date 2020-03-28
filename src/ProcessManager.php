@@ -16,6 +16,7 @@ namespace TheLevti\phpfork;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Contracts\EventDispatcher\Event;
+use TheLevti\phpfork\Batch\BatchJob;
 use TheLevti\phpfork\Batch\Strategy\StrategyInterface;
 use TheLevti\phpfork\EventDispatcher\Events;
 use TheLevti\phpfork\EventDispatcher\SignalEventDispatcher;
@@ -26,11 +27,19 @@ use TheLevti\phpfork\Util\ExitMessage;
 
 class ProcessManager
 {
+    /** @var \TheLevti\phpfork\EventDispatcher\SignalEventDispatcherInterface $dispatcher */
     private $dispatcher;
+
+    /** @var \TheLevti\phpfork\Factory $factory */
     private $factory;
+
+    /** @var bool $debug */
     private $debug;
+
     /** @var bool $zombieOkay */
     private $zombieOkay;
+
+    /** @var int|null $signal */
     private $signal;
 
     /** @var array<int,\TheLevti\phpfork\Fork> $forks */
@@ -39,12 +48,13 @@ class ProcessManager
     public function __construct(
         SignalEventDispatcherInterface $dispatcher = null,
         Factory $factory = null,
-        $debug = false
+        bool $debug = false
     ) {
         $this->dispatcher = $dispatcher ?: new SignalEventDispatcher();
         $this->factory = $factory ?: new Factory();
         $this->debug = $debug;
         $this->zombieOkay = false;
+        $this->signal = null;
         $this->forks = [];
     }
 
@@ -60,27 +70,38 @@ class ProcessManager
         }
     }
 
-    public function getEventDispatcher()
+    public function getEventDispatcher(): SignalEventDispatcherInterface
     {
         return $this->dispatcher;
     }
 
-    public function setDebug($debug)
+    public function setDebug(bool $debug): void
     {
         $this->debug = $debug;
     }
 
-    public function zombieOkay($zombieOkay = true)
+    public function zombieOkay(bool $zombieOkay = true): void
     {
         $this->zombieOkay = $zombieOkay;
     }
 
-    public function createBatchJob($data = null, StrategyInterface $strategy = null)
+    /**
+     * @param mixed|null $data
+     * @param \TheLevti\phpfork\Batch\Strategy\StrategyInterface|null $strategy
+     * @return \TheLevti\phpfork\Batch\BatchJob
+     */
+    public function createBatchJob($data = null, ?StrategyInterface $strategy = null): BatchJob
     {
         return $this->factory->createBatchJob($this, $data, $strategy);
     }
 
-    public function process($data, $callable, StrategyInterface $strategy = null)
+    /**
+     * @param mixed|null $data
+     * @param callable|null $callable
+     * @param \TheLevti\phpfork\Batch\Strategy\StrategyInterface|null $strategy
+     * @return \TheLevti\phpfork\Fork
+     */
+    public function process($data = null, ?callable $callable = null, ?StrategyInterface $strategy = null): Fork
     {
         return $this->createBatchJob($data, $strategy)->execute($callable);
     }
@@ -150,13 +171,13 @@ class ProcessManager
         );
     }
 
-    public function monitor($signal = SIGUSR1)
+    public function monitor(int $signal = SIGUSR1): void
     {
         $this->signal = $signal;
         $this->dispatcher->addSignalListener($signal, [$this, 'check']);
     }
 
-    public function check()
+    public function check(): void
     {
         foreach ($this->forks as $fork) {
             foreach ($fork->receive() as $message) {
@@ -165,14 +186,14 @@ class ProcessManager
         }
     }
 
-    public function wait($hang = true)
+    public function wait(bool $hang = true): void
     {
         foreach ($this->forks as $fork) {
             $fork->wait($hang);
         }
     }
 
-    public function waitForNext($hang = true)
+    public function waitForNext(bool $hang = true): ?Fork
     {
         if (-1 === $pid = pcntl_wait($status, ($hang ? WNOHANG : 0) | WUNTRACED)) {
             throw new ProcessControlException('Error while waiting for next fork to exit');
@@ -183,9 +204,11 @@ class ProcessManager
 
             return $this->forks[$pid];
         }
+
+        return null;
     }
 
-    public function waitFor($pid, $hang = true)
+    public function waitFor(int $pid, bool $hang = true): Fork
     {
         if (!isset($this->forks[$pid])) {
             throw new InvalidArgumentException('There is no fork with PID ' . $pid);
@@ -197,7 +220,7 @@ class ProcessManager
     /**
      * Sends a signal to all forks.
      */
-    public function killAll($signal = SIGINT)
+    public function killAll(int $signal = SIGINT): void
     {
         foreach ($this->forks as $fork) {
             $fork->kill($signal);

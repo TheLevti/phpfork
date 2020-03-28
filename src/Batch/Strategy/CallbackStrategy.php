@@ -13,22 +13,19 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork\Batch\Strategy;
 
-use TheLevti\phpfork\Exception\UnexpectedTypeException;
-
 class CallbackStrategy extends AbstractStrategy
 {
+    /**
+     * @var callable $callback
+     */
     private $callback;
 
-    public function __construct($callback)
+    public function __construct(callable $callback)
     {
-        if (!is_callable($callback)) {
-            throw new UnexpectedTypeException($callback, 'callable');
-        }
-
         $this->callback = $callback;
     }
 
-    public function createBatches($data)
+    public function createBatches($data): iterable
     {
         return call_user_func($this->callback, $data);
     }

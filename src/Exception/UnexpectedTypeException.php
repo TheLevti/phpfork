@@ -13,8 +13,14 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork\Exception;
 
-class UnexpectedTypeException extends \LogicException
+use LogicException;
+
+class UnexpectedTypeException extends LogicException
 {
+    /**
+     * @param mixed $value
+     * @param mixed $expectedType
+     */
     public function __construct($value, $expectedType)
     {
         parent::__construct(sprintf(

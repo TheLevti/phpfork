@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- #12: Fix all phpstan errors and general typing improvements.
+
 ## [4.0.0] - 2020-02-09
 
 ### Changed

@@ -43,8 +43,8 @@
         "ext-posix": "*",
         "ext-shmop": "*",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "phan/phan": "^2.4",
-        "phpstan/phpstan": "^0.12.4",
+        "phan/phan": "^2.6",
+        "phpstan/phpstan": "^0.12.18",
         "phpunit/phpunit": "^8.5",
         "squizlabs/php_codesniffer": "^3.5",
         "symfony/var-dumper": "^5.0"
@@ -74,7 +74,8 @@
             "/php_cs.dist",
             "/phpstan.neon.dist",
             "/phpunit.xml.dist",
-            "/tests"
+            "/tests",
+            "/phan"
         ]
     },
     "config": {
@@ -91,6 +92,7 @@
         "cs": "vendor/bin/phpcs --standard=PSR12 src/ tests/",
         "csf": "vendor/bin/php-cs-fixer fix",
         "static": "vendor/bin/phpstan analyse",
+        "phan": "vendor/bin/phan --no-progress-bar",
         "test": "vendor/bin/phpunit",
         "coverage": "vendor/bin/phpunit --coverage-html coverage"
     }

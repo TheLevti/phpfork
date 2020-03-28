@@ -15,49 +15,62 @@ namespace TheLevti\phpfork;
 
 use TheLevti\phpfork\Deferred\Deferred;
 use TheLevti\phpfork\Deferred\DeferredInterface;
+use TheLevti\phpfork\Deferred\PromiseInterface;
 use TheLevti\phpfork\Exception\ForkException;
 use TheLevti\phpfork\Exception\ProcessControlException;
 use TheLevti\phpfork\Util\ExitMessage;
 
 class Fork implements DeferredInterface
 {
+    /** @var \TheLevti\phpfork\Deferred\DeferredInterface $defer */
     private $defer;
+
+    /** @var int $pid */
     private $pid;
+
+    /** @var \TheLevti\phpfork\SharedMemory $shm */
     private $shm;
+
+    /** @var bool $debug */
     private $debug;
+
+    /** @var string $name */
     private $name;
+
+    /** @var int|null $status */
     private $status;
+
+    /** @var \TheLevti\phpfork\Util\ExitMessage|null $message */
     private $message;
 
     /** @var array<int,mixed> $messages */
     private $messages;
 
-    public function __construct($pid, SharedMemory $shm, $debug = false)
+    public function __construct(int $pid, SharedMemory $shm, bool $debug = false)
     {
         $this->defer = new Deferred();
         $this->pid = $pid;
         $this->shm = $shm;
         $this->debug = $debug;
         $this->name = '<anonymous>';
+        $this->status = null;
+        $this->message = null;
         $this->messages = [];
     }
 
-    /**
-     * Assign a name to the current fork (useful for debugging).
-     */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getPid()
+    public function getPid(): int
     {
         return $this->pid;
     }
 
-    public function wait($hang = true)
+    public function wait(bool $hang = true): self
     {
         if ($this->isExited()) {
             return $this;
@@ -77,7 +90,7 @@ class Fork implements DeferredInterface
     /**
      * Processes a status value retrieved while waiting for this fork to exit.
      */
-    public function processWaitStatus($status)
+    public function processWaitStatus(int $status): void
     {
         if ($this->isExited()) {
             throw new \LogicException('Cannot set status on an exited fork');
@@ -98,6 +111,9 @@ class Fork implements DeferredInterface
         }
     }
 
+    /**
+     * @return array<int,mixed>
+     */
     public function receive(): array
     {
         foreach ($this->shm->receive() as $message) {
@@ -111,7 +127,7 @@ class Fork implements DeferredInterface
         return $this->messages;
     }
 
-    public function kill($signal = SIGINT)
+    public function kill(int $signal = SIGINT): self
     {
         if (false === $this->shm->signal($signal)) {
             throw new ProcessControlException('Unable to send signal');
@@ -120,139 +136,160 @@ class Fork implements DeferredInterface
         return $this;
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getResult()
     {
         if ($this->message) {
             return $this->message->getResult();
         }
+
+        return null;
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getOutput()
     {
         if ($this->message) {
             return $this->message->getOutput();
         }
+
+        return null;
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getError()
     {
         if ($this->message) {
             return $this->message->getError();
         }
+
+        return null;
     }
 
+    /**
+     * @return array<int,mixed>
+     */
     public function getMessages(): array
     {
         return $this->messages;
     }
 
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return 0 === $this->getExitStatus();
     }
 
-    public function isExited()
+    public function isExited(): bool
     {
         return null !== $this->status && pcntl_wifexited($this->status);
     }
 
-    public function isStopped()
+    public function isStopped(): bool
     {
         return null !== $this->status && pcntl_wifstopped($this->status);
     }
 
-    public function isSignaled()
+    public function isSignaled(): bool
     {
         return null !== $this->status && pcntl_wifsignaled($this->status);
     }
 
-    public function getExitStatus()
+    public function getExitStatus(): ?int
     {
         if (null !== $this->status) {
             return pcntl_wexitstatus($this->status);
         }
+
+        return null;
     }
 
-    public function getTermSignal()
+    public function getTermSignal(): ?int
     {
         if (null !== $this->status) {
             return pcntl_wtermsig($this->status);
         }
+
+        return null;
     }
 
-    public function getStopSignal()
+    public function getStopSignal(): ?int
     {
         if (null !== $this->status) {
             return pcntl_wstopsig($this->status);
         }
+
+        return null;
     }
 
-    public function getState()
+    public function getState(): string
     {
         return $this->defer->getState();
     }
 
-    public function progress($progress): Fork
+    public function progress(callable $progress): PromiseInterface
     {
         $this->defer->progress($progress);
 
         return $this;
     }
 
-    public function always($always): Fork
+    public function always(callable $always): PromiseInterface
     {
         $this->defer->always($always);
 
         return $this;
     }
 
-    public function done($done): Fork
+    public function done(callable $done): PromiseInterface
     {
         $this->defer->done($done);
 
         return $this;
     }
 
-    public function fail($fail): Fork
+    public function fail(callable $fail): PromiseInterface
     {
         $this->defer->fail($fail);
 
         return $this;
     }
 
-    public function then($done, $fail = null): Fork
+    public function then(callable $done, callable $fail = null): PromiseInterface
     {
         $this->defer->then($done, $fail);
 
         return $this;
     }
 
-    public function notify(): Fork
+    public function notify(...$args): DeferredInterface
     {
-        $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array([$this->defer, 'notify'], array_values($args));
+        call_user_func_array([$this->defer, 'notify'], $args);
 
         return $this;
     }
 
-    public function resolve(): Fork
+    public function resolve(...$args): DeferredInterface
     {
-        $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array([$this->defer, 'resolve'], array_values($args));
+        call_user_func_array([$this->defer, 'resolve'], $args);
 
         return $this;
     }
 
-    public function reject(): Fork
+    public function reject(...$args): DeferredInterface
     {
-        $args = func_get_args();
         array_unshift($args, $this);
 
-        call_user_func_array([$this->defer, 'reject'], array_values($args));
+        call_user_func_array([$this->defer, 'reject'], $args);
 
         return $this;
     }

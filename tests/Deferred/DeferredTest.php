@@ -15,10 +15,10 @@ namespace TheLevti\phpfork\Deferred;
 
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use TheLevti\phpfork\Exception\UnexpectedTypeException;
 
 class DeferredTest extends TestCase
 {
+    /** @var \TheLevti\phpfork\Deferred\DeferredInterface $defer */
     private $defer;
 
     protected function setUp(): void
@@ -34,7 +34,7 @@ class DeferredTest extends TestCase
     /**
      * @dataProvider getMethodAndKey
      */
-    public function testCallbackOrder($method, $expected)
+    public function testCallbackOrder(string $method, string $expected): void
     {
         $log = [];
 
@@ -62,7 +62,7 @@ class DeferredTest extends TestCase
     /**
      * @dataProvider getMethodAndKey
      */
-    public function testThen($method, $expected)
+    public function testThen(string $method, string $expected): void
     {
         $log = [];
 
@@ -80,7 +80,7 @@ class DeferredTest extends TestCase
     /**
      * @dataProvider getMethod
      */
-    public function testMultipleResolve($method)
+    public function testMultipleResolve(string $method): void
     {
         $log = [];
 
@@ -97,7 +97,7 @@ class DeferredTest extends TestCase
     /**
      * @dataProvider getMethodAndInvalid
      */
-    public function testInvalidResolve($method, $invalid)
+    public function testInvalidResolve(string $method, string $invalid): void
     {
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('that has already been');
@@ -109,7 +109,7 @@ class DeferredTest extends TestCase
     /**
      * @dataProvider getMethodAndQueue
      */
-    public function testAlreadyResolved($resolve, $queue, $expect = true)
+    public function testAlreadyResolved(string $resolve, string $queue, bool $expect = true): void
     {
         // resolve the object
         $this->defer->$resolve();
@@ -123,19 +123,9 @@ class DeferredTest extends TestCase
     }
 
     /**
-     * @dataProvider getMethodAndInvalidCallback
+     * @return array<int,array<int,string>>
      */
-    public function testInvalidCallback($method, $invalid)
-    {
-        $this->expectException(UnexpectedTypeException::class);
-        $this->expectExceptionMessage('callable');
-
-        $this->defer->$method($invalid);
-    }
-
-    // providers
-
-    public function getMethodAndKey()
+    public function getMethodAndKey(): array
     {
         return [
             ['resolve', 'done'],
@@ -143,7 +133,10 @@ class DeferredTest extends TestCase
         ];
     }
 
-    public function getMethodAndInvalid()
+    /**
+     * @return array<int,array<int,string>>
+     */
+    public function getMethodAndInvalid(): array
     {
         return [
             ['resolve', 'reject'],
@@ -151,7 +144,10 @@ class DeferredTest extends TestCase
         ];
     }
 
-    public function getMethodAndQueue()
+    /**
+     * @return array<int,array<int,string|bool>>
+     */
+    public function getMethodAndQueue(): array
     {
         return [
             ['resolve', 'always'],
@@ -163,19 +159,10 @@ class DeferredTest extends TestCase
         ];
     }
 
-    public function getMethodAndInvalidCallback()
-    {
-        return [
-            ['always', 'foo!'],
-            ['always', ['foo!']],
-            ['done', 'foo!'],
-            ['done', ['foo!']],
-            ['fail', 'foo!'],
-            ['fail', ['foo!']],
-        ];
-    }
-
-    public function getMethod()
+    /**
+     * @return array<int,array<int,string>>
+     */
+    public function getMethod(): array
     {
         return [
             ['resolve'],

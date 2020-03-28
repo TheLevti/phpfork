@@ -16,41 +16,30 @@ namespace TheLevti\phpfork\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-/**
- * Wraps another event dispatcher, adding signal handling capabilities to it.
- */
 class WrappedEventDispatcher implements SignalEventDispatcherInterface
 {
     use SignalEventDispatcherTrait;
 
     /**
-     * The wrapped event dispatcher.
-     *
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $delegate
      */
     private $delegate;
 
-    /**
-     * Constructs a new instance of the WrappedEventDispatcher class.
-     *
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $delegate
-     *            The wrapped event dispatcher.
-     */
     public function __construct(EventDispatcherInterface $delegate)
     {
         $this->delegate = $delegate;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function dispatch($event, string $eventName = null): object
     {
         return call_user_func([$this->delegate, 'dispatch'], $event, $eventName);
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $eventName
+     * @param callable $listener
+     * @param int $priority
+     * @return mixed
      */
     public function addListener($eventName, $listener, $priority = 0)
     {
@@ -58,7 +47,8 @@ class WrappedEventDispatcher implements SignalEventDispatcherInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param EventSubscriberInterface $subscriber
+     * @return mixed
      */
     public function addSubscriber(EventSubscriberInterface $subscriber)
     {
@@ -66,7 +56,9 @@ class WrappedEventDispatcher implements SignalEventDispatcherInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $eventName
+     * @param callable $listener
+     * @return mixed
      */
     public function removeListener($eventName, $listener)
     {
@@ -74,7 +66,8 @@ class WrappedEventDispatcher implements SignalEventDispatcherInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param EventSubscriberInterface $subscriber
+     * @return mixed
      */
     public function removeSubscriber(EventSubscriberInterface $subscriber)
     {
@@ -82,7 +75,8 @@ class WrappedEventDispatcher implements SignalEventDispatcherInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string|null $eventName
+     * @return array<string,callable>
      */
     public function getListeners($eventName = null)
     {
@@ -90,7 +84,9 @@ class WrappedEventDispatcher implements SignalEventDispatcherInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $eventName
+     * @param callable $listener
+     * @return int|null
      */
     public function getListenerPriority($eventName, $listener)
     {
@@ -98,7 +94,8 @@ class WrappedEventDispatcher implements SignalEventDispatcherInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string|null $eventName
+     * @return bool
      */
     public function hasListeners($eventName = null)
     {

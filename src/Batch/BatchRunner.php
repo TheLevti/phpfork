@@ -13,12 +13,19 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork\Batch;
 
-use TheLevti\phpfork\Exception\UnexpectedTypeException;
 use TheLevti\phpfork\SharedMemory;
+use UnexpectedValueException;
 
 class BatchRunner
 {
+    /**
+     * @var array<int|string,mixed>|callable $batch
+     */
     private $batch;
+
+    /**
+     * @var callable $callback
+     */
     private $callback;
 
     /**
@@ -28,28 +35,36 @@ class BatchRunner
      *
      *     function($item, $index, $batch, $sharedMem)
      *
-     * @param mixed    $batch    The batch
-     * @param callable $callback The callback
+     * @param array<int|string,mixed>|callable $batch
+     * @param callable $callback
      */
-    public function __construct($batch, $callback)
+    public function __construct($batch, callable $callback)
     {
-        if (!is_callable($callback)) {
-            throw new UnexpectedTypeException($callback, 'callable');
-        }
-
         $this->batch = $batch;
         $this->callback = $callback;
     }
 
-    public function __invoke(SharedMemory $shm)
+    /**
+     * @param \TheLevti\phpfork\SharedMemory $shm
+     * @throws \UnexpectedValueException
+     * @return array<int|string,mixed>
+     */
+    public function __invoke(SharedMemory $shm): array
     {
         // lazy batch...
-        if ($this->batch instanceof \Closure) {
-            $this->batch = call_user_func($this->batch);
+        if (is_callable($this->batch)) {
+            /** @var array<mixed> $batchArray */
+            $batchArray = call_user_func($this->batch);
+        } elseif (is_array($this->batch)) {
+            /** @var array<mixed> $batchArray */
+            $batchArray = $this->batch;
+        } else {
+            throw new UnexpectedValueException('Batch is not an array nor a callable.');
         }
 
+        /** @var array<int|string,mixed> $results */
         $results = [];
-        foreach ($this->batch as $index => $item) {
+        foreach ($batchArray as $index => $item) {
             $results[$index] = call_user_func($this->callback, $item, $index, $this->batch, $shm);
         }
 

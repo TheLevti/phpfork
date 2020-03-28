@@ -22,7 +22,7 @@ class ProcessManagerTest extends TestCase
     /**
      * Process Manager object
      *
-     * @var ProcessManager
+     * @var \TheLevti\phpfork\ProcessManager $manager
      */
     private $manager;
 
@@ -36,7 +36,7 @@ class ProcessManagerTest extends TestCase
         unset($this->manager);
     }
 
-    public function testDoneCallbacks()
+    public function testDoneCallbacks(): void
     {
         $success = null;
 
@@ -44,7 +44,9 @@ class ProcessManagerTest extends TestCase
             echo 'output';
 
             return 'result';
-        })->done(function () use (&$success) {
+        });
+
+        $fork->done(function () use (&$success) {
             $success = true;
         })->fail(function () use (&$success) {
             $success = false;
@@ -57,13 +59,15 @@ class ProcessManagerTest extends TestCase
         $this->assertEquals('result', $fork->getResult());
     }
 
-    public function testFailCallbacks()
+    public function testFailCallbacks(): void
     {
         $success = null;
 
         $fork = $this->manager->fork(function () {
             throw new \Exception('child error');
-        })->done(function () use (&$success) {
+        });
+
+        $fork->done(function () use (&$success) {
             $success = true;
         })->fail(function () use (&$success) {
             $success = false;
@@ -75,7 +79,7 @@ class ProcessManagerTest extends TestCase
         $this->assertNotEmpty($fork->getError());
     }
 
-    public function testObjectReturn()
+    public function testObjectReturn(): void
     {
         $mock = $this->getMockBuilder(stdClass::class)->setMethods(['__sleep'])->getMock();
         $mock->method('__sleep')->willThrowException(new Exception("Hey, don\'t serialize me!"));
@@ -90,7 +94,7 @@ class ProcessManagerTest extends TestCase
         $this->assertFalse($fork->isSuccessful());
     }
 
-    public function testBatchProcessing()
+    public function testBatchProcessing(): void
     {
         $expected = range(100, 109);
 
@@ -106,7 +110,7 @@ class ProcessManagerTest extends TestCase
     /**
      * Test batch processing with return values containing a newline character
      */
-    public function testBatchProcessingWithNewlineReturnValues()
+    public function testBatchProcessingWithNewlineReturnValues(): void
     {
         $range = range(100, 109);
         $expected = [
@@ -135,9 +139,9 @@ class ProcessManagerTest extends TestCase
     /**
      * Data provider for `testLargeBatchProcessing()`
      *
-     * @return array
+     * @return array<int,array<int,int>>
      */
-    public function batchProvider()
+    public function batchProvider(): array
     {
         return [
             [10],
@@ -155,11 +159,11 @@ class ProcessManagerTest extends TestCase
      *
      * @dataProvider batchProvider
      */
-    public function testLargeBatchProcessing($rangeEnd)
+    public function testLargeBatchProcessing(int $rangeEnd): void
     {
         $expected = array_fill(0, $rangeEnd, null);
 
-        /** @var Fork $fork */
+        /** @var \TheLevti\phpfork\Fork $fork */
         $fork = $this->manager->process($expected, function ($item) {
             return $item;
         });

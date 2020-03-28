@@ -19,8 +19,12 @@ class ChunkStrategyTest extends TestCase
 {
     /**
      * @dataProvider provideNumber
+     *
+     * @param int $number
+     * @param array<int,int> $expectedCounts
+     * @return void
      */
-    public function testChunkArray($number, $expectedCounts)
+    public function testChunkArray(int $number, array $expectedCounts): void
     {
         $strategy = new ChunkStrategy($number);
         $batches = $strategy->createBatches(range(1, 100));
@@ -34,7 +38,10 @@ class ChunkStrategyTest extends TestCase
         $this->assertEquals(count($expectedCounts), $batchesCount);
     }
 
-    public function provideNumber()
+    /**
+     * @return array<int,array<int,int|array<int,int>>>
+     */
+    public function provideNumber(): array
     {
         return [
             [1, [100]],

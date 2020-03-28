@@ -15,41 +15,60 @@ namespace TheLevti\phpfork\Util;
 
 class ExitMessage implements \Serializable
 {
+    /** @var mixed $result */
     private $result;
+
+    /** @var mixed $output */
     private $output;
+
+    /** @var \TheLevti\phpfork\Util\Error|null $error */
     private $error;
 
+    /**
+     * @return mixed
+     */
     public function getResult()
     {
         return $this->result;
     }
 
-    public function setResult($result)
+    /**
+     * @param mixed $result
+     * @return void
+     */
+    public function setResult($result): void
     {
         $this->result = $result;
     }
 
+    /**
+     * @return mixed
+     */
     public function getOutput()
     {
         return $this->output;
     }
 
-    public function setOutput($output)
+    /**
+     * @param mixed $output
+     * @return void
+     */
+    public function setOutput($output): void
     {
         $this->output = $output;
     }
 
-    public function getError()
+    public function getError(): ?Error
     {
         return $this->error;
     }
 
-    public function setError(Error $error)
+    public function setError(Error $error): void
     {
         $this->error = $error;
     }
 
-    public function serialize()
+    public function serialize(): string
     {
         return serialize([
             $this->result,
@@ -58,12 +77,16 @@ class ExitMessage implements \Serializable
         ]);
     }
 
-    public function unserialize($str)
+    /**
+     * @param string $serialized
+     * @return void
+     */
+    public function unserialize($serialized)
     {
         list(
             $this->result,
             $this->output,
             $this->error
-        ) = unserialize($str);
+        ) = unserialize($serialized);
     }
 }
