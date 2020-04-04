@@ -71,11 +71,11 @@
             "/.gitignore",
             "/.travis.yml",
             "/coverage",
-            "/php_cs.dist",
+            "/.php_cs.dist",
             "/phpstan.neon.dist",
             "/phpunit.xml.dist",
             "/tests",
-            "/phan"
+            "/.phan"
         ]
     },
     "config": {
