@@ -387,8 +387,9 @@ return [
     // your application should be included in this list.
     'directory_list' => [
         'src',
-        'vendor/symfony/event-dispatcher',
+        'vendor/psr/log/Psr/Log',
         'vendor/symfony/event-dispatcher-contracts',
+        'vendor/symfony/event-dispatcher',
         'vendor/symfony/var-dumper',
     ],
 
