@@ -209,7 +209,7 @@ trait SignalEventDispatcherTestTrait
     public function testSignalHandlerInstallFailure(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessageRegExp(
+        $this->expectExceptionMessageMatches(
             '/Could not get installed signal handler for signal 255./'
         );
         $this->expectExceptionCode(22);
@@ -225,7 +225,7 @@ trait SignalEventDispatcherTestTrait
     public function testSignalHandlerInstallErrorHandling(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessageRegExp(
+        $this->expectExceptionMessageMatches(
             '/Could not install signal handler for signal 255./'
         );
         $this->expectExceptionCode(22);
