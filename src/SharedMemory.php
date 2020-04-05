@@ -13,29 +13,37 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use TheLevti\phpfork\Exception\PosixException;
 use TheLevti\phpfork\Exception\ProcessControlException;
 
 /**
  * Sends messages between processes.
  */
-class SharedMemory
+class SharedMemory implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /** @var int $pid */
-    private $pid;
+    protected $pid;
+
+    /** @var int|null $signal */
+    protected $signal;
 
     /** @var int|null $ppid */
     private $ppid;
 
-    /** @var int|null $signal */
-    private $signal;
-
     /**
      * Constructor.
      *
-     * @param int|null $pid    The child process id or null if this is the child
-     * @param int|null $signal The signal to send after writing to shared memory
+     * @param int|null                 $pid    The child process id or null if this is the child
+     * @param int|null                 $signal The signal to send after writing to shared memory
+     * @param \Psr\Log\LoggerInterface $logger PSR-3 logger instance.
      */
-    public function __construct(?int $pid = null, ?int $signal = null)
+    public function __construct(?int $pid = null, ?int $signal = null, ?LoggerInterface $logger = null)
     {
         if (null === $pid) {
             // child
@@ -49,6 +57,7 @@ class SharedMemory
         $this->pid = $pid;
         $this->ppid = $ppid;
         $this->signal = $signal;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
@@ -159,12 +168,22 @@ class SharedMemory
 
     /**
      * Sends a signal to the other process.
+     *
+     * @param int $signal Signal to send to the process.
+     * @return static Current shared memory instance.
      */
-    public function signal(int $signal): bool
+    public function signal(int $signal)
     {
         $pid = null === $this->ppid ? $this->pid : $this->ppid;
 
-        return posix_kill($pid, $signal);
+        if (posix_kill($pid, $signal) === false) {
+            throw PosixException::posixError(
+                sprintf('Failed to send signal %u to process %d.', $signal, $pid),
+                $this->logger
+            );
+        };
+
+        return $this;
     }
 
     /**

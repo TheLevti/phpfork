@@ -13,26 +13,28 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use TheLevti\phpfork\Deferred\Deferred;
 use TheLevti\phpfork\Deferred\DeferredInterface;
 use TheLevti\phpfork\Deferred\PromiseInterface;
-use TheLevti\phpfork\Exception\ForkException;
 use TheLevti\phpfork\Exception\ProcessControlException;
 use TheLevti\phpfork\Util\ExitMessage;
 
-class Fork implements DeferredInterface
+class Fork implements DeferredInterface, LoggerAwareInterface
 {
-    /** @var \TheLevti\phpfork\Deferred\DeferredInterface $defer */
-    private $defer;
+    use LoggerAwareTrait;
 
     /** @var int $pid */
-    private $pid;
+    protected $pid;
 
     /** @var \TheLevti\phpfork\SharedMemory $shm */
-    private $shm;
+    protected $shm;
 
-    /** @var bool $debug */
-    private $debug;
+    /** @var \TheLevti\phpfork\Deferred\DeferredInterface $defer */
+    private $defer;
 
     /** @var string $name */
     private $name;
@@ -46,12 +48,12 @@ class Fork implements DeferredInterface
     /** @var array<int,mixed> $messages */
     private $messages;
 
-    public function __construct(int $pid, SharedMemory $shm, bool $debug = false)
+    public function __construct(int $pid, SharedMemory $shm, ?LoggerInterface $logger = null)
     {
-        $this->defer = new Deferred();
         $this->pid = $pid;
         $this->shm = $shm;
-        $this->debug = $debug;
+        $this->logger = $logger ?? new NullLogger();
+        $this->defer = new Deferred();
         $this->name = '<anonymous>';
         $this->status = null;
         $this->message = null;
@@ -76,8 +78,13 @@ class Fork implements DeferredInterface
             return $this;
         }
 
-        if (-1 === $pid = pcntl_waitpid($this->pid, $status, ($hang ? 0 : WNOHANG) | WUNTRACED)) {
-            throw new ProcessControlException('Error while waiting for process ' . $this->pid);
+        $status = 0;
+        $pid = pcntl_waitpid($this->pid, $status, ($hang ? 0 : WNOHANG) | WUNTRACED);
+        if (-1 === $pid) {
+            throw ProcessControlException::pcntlError(
+                sprintf('Failed to wait for process %d', $this->pid),
+                $this->logger
+            );
         }
 
         if ($this->pid === $pid) {
@@ -105,8 +112,14 @@ class Fork implements DeferredInterface
 
             $this->isSuccessful() ? $this->resolve() : $this->reject();
 
-            if ($this->debug && (!$this->isSuccessful() || $this->getError())) {
-                throw new ForkException($this->name, $this->pid, $this->getError());
+            if (!$this->isSuccessful() || $this->getError()) {
+                $this->logger->error(
+                    'Processed wait status with not successful result.',
+                    [
+                        'fork_pid' => $this->pid,
+                        'fork_name' => $this->name,
+                    ]
+                );
             }
         }
     }
@@ -129,9 +142,7 @@ class Fork implements DeferredInterface
 
     public function kill(int $signal = SIGINT): self
     {
-        if (false === $this->shm->signal($signal)) {
-            throw new ProcessControlException('Unable to send signal');
-        }
+        $this->shm->signal($signal);
 
         return $this;
     }

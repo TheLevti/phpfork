@@ -126,7 +126,6 @@ class ProcessManagerTest extends TestCase
             9 => "SomeString\n109",
         ];
 
-        $this->manager->setDebug(true);
         $fork = $this->manager->process($range, function ($item) {
             return "SomeString\n$item";
         });

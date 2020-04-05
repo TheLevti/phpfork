@@ -15,7 +15,7 @@ namespace TheLevti\phpfork\Exception;
 
 use LogicException;
 
-class UnexpectedTypeException extends LogicException
+class UnexpectedTypeException extends LogicException implements PhpforkExceptionInterface
 {
     /**
      * @param mixed $value

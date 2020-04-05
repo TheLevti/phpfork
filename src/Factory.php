@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace TheLevti\phpfork;
 
+use Psr\Log\LoggerInterface;
 use TheLevti\phpfork\Batch\BatchJob;
 use TheLevti\phpfork\Batch\Strategy\StrategyInterface;
 
@@ -32,30 +33,13 @@ class Factory
         return new BatchJob($manager, $data, $strategy);
     }
 
-    /**
-     * Creates a new shared memory instance.
-     *
-     * @param int|null $pid    The child process id or null if this is the child.
-     * @param int|null $signal The signal to send after writing to shared memory.
-     *
-     * @return \TheLevti\phpfork\SharedMemory A new shared memory instance.
-     */
-    public function createSharedMemory(?int $pid = null, ?int $signal = null): SharedMemory
+    public function createSharedMemory(?int $pid = null, ?int $signal = null, ?LoggerInterface $logger = null): SharedMemory
     {
-        return new SharedMemory($pid, $signal);
+        return new SharedMemory($pid, $signal, $logger);
     }
 
-    /**
-     * Creates a new fork instance.
-     *
-     * @param int          $pid   Process id
-     * @param SharedMemory $shm   Shared memory
-     * @param bool         $debug Debug mode
-     *
-     * @return Fork A new fork instance
-     */
-    public function createFork($pid, SharedMemory $shm, $debug = false)
+    public function createFork(int $pid, SharedMemory $shm, ?LoggerInterface $logger = null): Fork
     {
-        return new Fork($pid, $shm, $debug);
+        return new Fork($pid, $shm, $logger);
     }
 }

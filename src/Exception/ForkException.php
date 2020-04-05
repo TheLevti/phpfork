@@ -19,7 +19,7 @@ use TheLevti\phpfork\Util\Error;
 /**
  * Turns an error passed through shared memory into an exception.
  */
-class ForkException extends RuntimeException
+class ForkException extends RuntimeException implements PhpforkExceptionInterface
 {
     /** @var string $name */
     private $name;

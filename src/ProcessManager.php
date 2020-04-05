@@ -15,26 +15,30 @@ namespace TheLevti\phpfork;
 
 use Exception;
 use InvalidArgumentException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Contracts\EventDispatcher\Event;
 use TheLevti\phpfork\Batch\BatchJob;
 use TheLevti\phpfork\Batch\Strategy\StrategyInterface;
 use TheLevti\phpfork\EventDispatcher\Events;
 use TheLevti\phpfork\EventDispatcher\SignalEventDispatcher;
 use TheLevti\phpfork\EventDispatcher\SignalEventDispatcherInterface;
+use TheLevti\phpfork\Exception\OutputBufferingException;
 use TheLevti\phpfork\Exception\ProcessControlException;
 use TheLevti\phpfork\Util\Error;
 use TheLevti\phpfork\Util\ExitMessage;
 
-class ProcessManager
+class ProcessManager implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /** @var \TheLevti\phpfork\EventDispatcher\SignalEventDispatcherInterface $dispatcher */
-    private $dispatcher;
+    protected $dispatcher;
 
     /** @var \TheLevti\phpfork\Factory $factory */
-    private $factory;
-
-    /** @var bool $debug */
-    private $debug;
+    protected $factory;
 
     /** @var bool $zombieOkay */
     private $zombieOkay;
@@ -48,11 +52,12 @@ class ProcessManager
     public function __construct(
         SignalEventDispatcherInterface $dispatcher = null,
         Factory $factory = null,
-        bool $debug = false
+        ?LoggerInterface $logger = null
     ) {
-        $this->dispatcher = $dispatcher ?: new SignalEventDispatcher();
-        $this->factory = $factory ?: new Factory();
-        $this->debug = $debug;
+        $this->dispatcher = $dispatcher ?? new SignalEventDispatcher();
+        $this->factory = $factory ?? new Factory();
+        $this->logger = $logger ?? new NullLogger();
+
         $this->zombieOkay = false;
         $this->signal = null;
         $this->forks = [];
@@ -73,11 +78,6 @@ class ProcessManager
     public function getEventDispatcher(): SignalEventDispatcherInterface
     {
         return $this->dispatcher;
-    }
-
-    public function setDebug(bool $debug): void
-    {
-        $this->debug = $debug;
     }
 
     public function zombieOkay(bool $zombieOkay = true): void
@@ -114,13 +114,16 @@ class ProcessManager
      */
     public function fork(callable $callable): Fork
     {
-        // allow the system to cleanup before forking
         call_user_func([$this->dispatcher, 'dispatch'], new Event(), Events::PRE_FORK);
 
-        if (-1 === ($pid = pcntl_fork())) {
-            throw new ProcessControlException('Unable to fork a new process.');
+        $pid = pcntl_fork();
+
+        // Error case.
+        if (-1 === $pid) {
+            throw ProcessControlException::pcntlError('Failed to fork process.', $this->logger);
         }
 
+        // Child case.
         if (0 === $pid) {
             // reset the list of child processes
             $this->forks = [];
@@ -129,11 +132,11 @@ class ProcessManager
             call_user_func([$this->dispatcher, 'dispatch'], new Event(), Events::POST_FORK);
 
             // setup the shared memory and exit message.
-            $shm = $this->factory->createSharedMemory(null, $this->signal);
+            $shm = $this->factory->createSharedMemory(null, $this->signal, $this->logger);
             $message = new ExitMessage();
 
-            if (!$this->debug) {
-                ob_start();
+            if (ob_start() === false) {
+                throw new OutputBufferingException('Failed to start output buffering.');
             }
 
             try {
@@ -145,9 +148,12 @@ class ProcessManager
                 $status = 1;
             }
 
-            if (!$this->debug) {
-                $message->setOutput(ob_get_clean());
+            $output = ob_get_clean();
+            if ($output === false) {
+                throw new OutputBufferingException('Failed to get and clean output buffer.');
             }
+
+            $message->setOutput($output);
 
             try {
                 $shm->send($message, false);
@@ -164,10 +170,11 @@ class ProcessManager
             exit($status);
         }
 
+        // Parent case.
         return $this->forks[$pid] = $this->factory->createFork(
             $pid,
-            $this->factory->createSharedMemory($pid),
-            $this->debug
+            $this->factory->createSharedMemory($pid, null, $this->logger),
+            $this->logger
         );
     }
 
